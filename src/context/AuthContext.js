@@ -1,38 +1,86 @@
-import React, { createContext, useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import {
+	getToken,
+	saveToken,
+	removeToken,
+	getUser,
+	saveUser,
+	removeUser,
+} from "../services/authService";
 
-export const AuthContext = createContext();
+// ── DEV BYPASS ────────────────────────────────────────────
+// Must match DEV_BYPASS in AppNavigator.js.
+// SET TO false BEFORE ANY PRODUCTION COMMIT.
+const DEV_BYPASS = false;
+
+const DEV_MOCK_USER = {
+	name: "Tunde",
+	full_name: "Tunde Adeyemi",
+	email: "tunde@errandgo.com",
+	avatar: null,
+};
+
+const DEV_MOCK_TOKEN = "dev_mock_token_not_for_production";
+// ─────────────────────────────────────────────────────────
+
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-	const [token, setToken] = useState(null);
-	const [user, setUser] = useState(null);
-	const [loading, setLoading] = useState(true);
+	const [token, setToken] = useState(DEV_BYPASS ? DEV_MOCK_TOKEN : null);
+	const [user, setUser] = useState(DEV_BYPASS ? DEV_MOCK_USER : null);
+	const [loading, setLoading] = useState(!DEV_BYPASS);
 
+	// ── Restore session from AsyncStorage (skipped in DEV_BYPASS) ──
 	useEffect(() => {
-		const loadToken = async () => {
-			const stored = await AsyncStorage.getItem("errandgo_token");
-			if (stored) setToken(stored);
-			setLoading(false);
+		if (DEV_BYPASS) return;
+
+		const restoreSession = async () => {
+			try {
+				const [storedToken, storedUser] = await Promise.all([
+					getToken(),
+					getUser(),
+				]);
+				if (storedToken) {
+					setToken(storedToken);
+					setUser(storedUser);
+				}
+			} catch (error) {
+				console.error("Session restore failed:", error);
+			} finally {
+				setLoading(false);
+			}
 		};
-		loadToken();
+
+		restoreSession();
 	}, []);
 
-	const signIn = async (jwt, userData) => {
-		await AsyncStorage.setItem("errandgo_token", jwt);
-		setToken(jwt);
+	// ── Sign in ──
+	const signIn = async (newToken, userData = null) => {
+		await saveToken(newToken);
+		if (userData) await saveUser(userData);
+		setToken(newToken);
 		setUser(userData);
 	};
 
+	// ── Sign out ──
 	const signOut = async () => {
-		await AsyncStorage.removeItem("errandgo_token");
+		await removeToken();
+		await removeUser();
 		setToken(null);
 		setUser(null);
 	};
 
 	return (
-		<AuthContext.Provider
-			value={{ token, user, setUser, signIn, signOut, loading }}>
+		<AuthContext.Provider value={{ token, user, loading, signIn, signOut }}>
 			{children}
 		</AuthContext.Provider>
 	);
 };
+
+export const useAuth = () => {
+	const context = useContext(AuthContext);
+	if (!context) throw new Error("useAuth must be used within AuthProvider");
+	return context;
+};
+
+export default AuthContext;

@@ -1,52 +1,49 @@
-import React, { useEffect, useContext } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import { AuthContext } from "@context/AuthContext";
-import { COLORS } from "@constants/colors";
-import { TYPOGRAPHY } from "@constants/typography";
+import React, { useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import StatusBar from "../components/StatusBar";
+import HomeIndicator from "../components/HomeIndicator";
+import ErrandGoLogo from "../components/ErrandGoLogo";
+import { COLORS } from "../constants/colors";
+import { TYPOGRAPHY, FONTS } from "../constants/typography";
 
-export default function SplashScreen({ navigation }) {
-	const { token, loading } = useContext(AuthContext);
-
+const SplashScreen = ({ navigation }) => {
 	useEffect(() => {
-		if (loading) return; // wait for AsyncStorage to finish reading
-
-		const timer = setTimeout(() => {
-			if (token) {
-				navigation.replace("Dashboard"); // returning user — skip onboarding
-			} else {
-				navigation.replace("Slider"); // new user — start onboarding
-			}
-		}, 2500);
-
-		return () => clearTimeout(timer);
-	}, [loading, token]);
+		const t = setTimeout(() => navigation.replace("Onboarding"), 2500);
+		return () => clearTimeout(t);
+	}, [navigation]);
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.logo}>ErrandGo</Text>
-			<ActivityIndicator
-				size="small"
-				color={COLORS.BUTTON_GREEN}
-				style={styles.spinner}
-			/>
+		<View style={styles.screen}>
+			<StatusBar theme="dark" />
+			<View style={styles.body}>
+				<ErrandGoLogo size="md" theme="dark" />
+				<Text style={styles.tagline}>Your errands, handled.</Text>
+			</View>
+			<HomeIndicator color={COLORS.homeIndicator} />
 		</View>
 	);
-}
+};
 
 const styles = StyleSheet.create({
-	container: {
+	screen: {
 		flex: 1,
-		backgroundColor: COLORS.PRIMARY_GREEN,
+		backgroundColor: COLORS.splashBg,
+		alignItems: "stretch",
+	},
+	body: {
+		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
+		gap: 12,
 	},
-	logo: {
-		...TYPOGRAPHY.H1,
-		color: COLORS.SURFACE_WHITE,
-		letterSpacing: 1,
-	},
-	spinner: {
-		position: "absolute",
-		bottom: 60,
+	tagline: {
+		color: COLORS.textLight,
+		fontFamily: FONTS.gabarito,
+		fontSize: 13,
+		fontWeight: "700",
+		letterSpacing: 0.16,
+		textAlign: "right",
 	},
 });
+
+export default SplashScreen;

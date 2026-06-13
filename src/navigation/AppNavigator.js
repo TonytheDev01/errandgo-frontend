@@ -1,38 +1,65 @@
-import React, { useContext } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { AuthContext } from "@context/AuthContext";
+import React from "react";
+import { View, ActivityIndicator } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useAuth } from "@context/AuthContext";
+import { COLORS } from "@constants/colors";
 
 import SplashScreen from "@screens/SplashScreen";
-import SliderScreen from "@screens/SliderScreen";
 import OnboardingScreen from "@screens/OnboardingScreen";
-import SignUpScreen from "@screens/SignUpScreen";
 import SignInScreen from "@screens/SignInScreen";
+import SignUpScreen from "@screens/SignUpScreen";
+import RegisterScreen from "@screens/RegisterScreen";
+import OTPScreen from "@screens/OTPScreen";
+import SuccessOverlayScreen from "@screens/SuccessOverlayScreen";
 import DashboardScreen from "@screens/DashboardScreen";
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-const DashboardTabs = () => (
-	<Tab.Navigator screenOptions={{ headerShown: false }}>
-		<Tab.Screen name="Home" component={DashboardScreen} />
-		<Tab.Screen name="History" component={() => null} />
-		<Tab.Screen name="Settings" component={() => null} />
-	</Tab.Navigator>
-);
+// ── DEV BYPASS ────────────────────────────────────────────
+// Skips auth and loads Dashboard directly for UI testing.
+// SET TO false BEFORE ANY PRODUCTION COMMIT.
+const DEV_BYPASS = false;
+// ─────────────────────────────────────────────────────────
 
-export default function AppNavigator() {
+const AppNavigator = () => {
+	const { token, loading } = useAuth();
+
+	if (loading) {
+		return (
+			<View
+				style={{
+					flex: 1,
+					alignItems: "center",
+					justifyContent: "center",
+					backgroundColor: "#F5F0EB",
+				}}>
+				<ActivityIndicator size="large" color={COLORS.primary} />
+			</View>
+		);
+	}
+
 	return (
-		<NavigationContainer>
-			<Stack.Navigator screenOptions={{ headerShown: false }}>
-				<Stack.Screen name="Splash" component={SplashScreen} />
-				<Stack.Screen name="Slider" component={SliderScreen} />
-				<Stack.Screen name="Onboarding" component={OnboardingScreen} />
-				<Stack.Screen name="SignUp" component={SignUpScreen} />
-				<Stack.Screen name="SignIn" component={SignInScreen} />
-				<Stack.Screen name="Dashboard" component={DashboardTabs} />
-			</Stack.Navigator>
-		</NavigationContainer>
+		<Stack.Navigator screenOptions={{ headerShown: false, animation: "fade" }}>
+			{token || DEV_BYPASS ? (
+				// ── Authenticated stack ──
+				<Stack.Screen name="Dashboard" component={DashboardScreen} />
+			) : (
+				// ── Unauthenticated stack ──
+				<>
+					<Stack.Screen name="Splash" component={SplashScreen} />
+					<Stack.Screen name="Onboarding" component={OnboardingScreen} />
+					<Stack.Screen name="SignIn" component={SignInScreen} />
+					<Stack.Screen name="SignUp" component={SignUpScreen} />
+					<Stack.Screen name="Register" component={RegisterScreen} />
+					<Stack.Screen name="OTP" component={OTPScreen} />
+					<Stack.Screen
+						name="SuccessOverlay"
+						component={SuccessOverlayScreen}
+					/>
+				</>
+			)}
+		</Stack.Navigator>
 	);
-}
+};
+
+export default AppNavigator;

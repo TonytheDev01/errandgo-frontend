@@ -1,29 +1,38 @@
 {
-	"expo": {
-		"name": "errandgo-frontend",
-		"slug": "errandgo-frontend",
-		"version": "1.0.0",
-		"orientation": "portrait",
-		"icon": "./assets/icon.png",
-		"userInterfaceStyle": "light",
-		"splash": {
-			"image": "./assets/splash-icon.png",
-			"resizeMode": "contain",
-			"backgroundColor": "#ffffff"
-		},
-		"ios": {
-			"supportsTablet": true
-		},
-		"android": {
-			"adaptiveIcon": {
-				"foregroundImage": "./assets/adaptive-icon.png",
-				"backgroundColor": "#ffffff"
-			},
-			"edgeToEdgeEnabled": true
-		},
-		"web": {
-			"favicon": "./assets/favicon.png"
-		},
-		"plugins": []
-	}
+  "expo": {
+    "name": "ErrandGo",
+    "slug": "errandgo-frontend",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/app-icon1.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/images/Errand-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#052E16"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.errandgo.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/Errand-logo.png",
+        "backgroundColor": "#052E16"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.errandgo.app"
+    },
+    "web": {
+      "favicon": "./assets/images/app-icon1.png"
+    },
+    "plugins": [
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "83bf84d2-508b-42a8-aa58-c9afe22169d2"
+      }
+    }
+  }
 }

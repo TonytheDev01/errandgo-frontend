@@ -1,15 +1,82 @@
-import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API = axios.create({
-	baseURL: process.env.API_BASE_URL || "http://localhost:5000",
-	headers: { "Content-Type": "application/json" },
-});
+import { API_BASE_URL } from "@env";
+const BASE_URL = API_BASE_URL;
 
-export const registerUser = (email, password, location_tag) =>
-	API.post("/auth/register", { email, password, location_tag });
+console.log("API BASE URL:", BASE_URL);
+const TOKEN_KEY = "errandgo_token";
+const USER_KEY = "errandgo_user";
 
-export const loginUser = (email, password) =>
-	API.post("/auth/login", { email, password });
+const request = async (
+	endpoint,
+	method = "POST",
+	body = null,
+	token = null
+) => {
+	const headers = { "Content-Type": "application/json" };
+	if (token) headers["Authorization"] = `Bearer ${token}`;
 
-export const googleAuth = (id_token, location_tag) =>
-	API.post("/auth/google", { id_token, location_tag });
+	const config = { method, headers };
+	if (body) config.body = JSON.stringify(body);
+
+	console.log("REQUEST URL:", `${BASE_URL}${endpoint}`);
+	console.log("REQUEST BODY:", JSON.stringify(body));
+
+	try {
+		const response = await fetch(`${BASE_URL}${endpoint}`, config);
+		const data = await response.json();
+		return { ok: response.ok, status: response.status, data };
+	} catch (error) {
+		return {
+			ok: false,
+			status: 0,
+			data: { error: "Network error. Please check your connection." },
+		};
+	}
+};
+
+// ── Token storage
+export const saveToken = (token) => AsyncStorage.setItem(TOKEN_KEY, token);
+export const getToken = () => AsyncStorage.getItem(TOKEN_KEY);
+export const removeToken = () => AsyncStorage.removeItem(TOKEN_KEY);
+
+// ── User storage
+export const saveUser = (user) =>
+	AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
+export const getUser = async () => {
+	const raw = await AsyncStorage.getItem(USER_KEY);
+	return raw ? JSON.parse(raw) : null;
+};
+export const removeUser = () => AsyncStorage.removeItem(USER_KEY);
+
+// ── AUTH ENDPOINTS
+
+export const register = async ({ email, password, location }) => {
+	return await request("/auth/register", "POST", {
+		email,
+		password,
+		location,
+	});
+};
+
+export const verifyEmail = async ({ email, otp_code }) => {
+	return await request("/auth/verify-email", "POST", { email, otp_code });
+};
+
+export const resendOTP = async ({ email }) => {
+	return await request("/auth/resend-otp", "POST", { email });
+};
+
+export const login = async ({ email, password }) => {
+	return await request("/auth/login", "POST", { email, password });
+};
+
+export const logout = async () => {
+	await removeToken();
+	await removeUser();
+};
+
+export const isAuthenticated = async () => {
+	const token = await getToken();
+	return token || null;
+};
