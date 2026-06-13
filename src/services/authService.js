@@ -1,9 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { API_BASE_URL } from "@env";
-const BASE_URL = API_BASE_URL;
-
-console.log("API BASE URL:", BASE_URL);
+const BASE_URL = API_BASE_URL || "https://errand-go-backend.onrender.com";
 const TOKEN_KEY = "errandgo_token";
 const USER_KEY = "errandgo_user";
 
