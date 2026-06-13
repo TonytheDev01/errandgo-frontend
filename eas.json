@@ -15,10 +15,7 @@
 			}
 		},
 		"production": {
-			"autoIncrement": true,
-			"android": {
-				"buildType": "aab"
-			}
+			"autoIncrement": true
 		}
 	},
 	"submit": {
