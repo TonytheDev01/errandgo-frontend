@@ -19,8 +19,10 @@ import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/typography";
 import * as authService from "../services/authService";
 import { useAuth } from "../context/AuthContext";
+import useGoogleAuth from "../hooks/useGoogleAuth";
 
 const SignInScreen = ({ navigation }) => {
+	// ✅ Fix 1 — single signIn declaration (was duplicated, caused crash)
 	const { signIn } = useAuth();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -54,10 +56,14 @@ const SignInScreen = ({ navigation }) => {
 		}
 	};
 
-	const handleGoogleLogin = () => {
-		// Wire to Google OAuth in next sprint
-		console.log("Google login pressed");
-	};
+	const { handleGoogleSignIn, googleAuthReady } = useGoogleAuth({
+		onLoading: (val) => setLoading(val),
+		onSuccess: async (token, user) => {
+			// Once backend is ready this saves token and redirects to Dashboard
+			await signIn(token, user);
+		},
+		onError: (msg) => setError(msg),
+	});
 
 	return (
 		<SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -94,7 +100,7 @@ const SignInScreen = ({ navigation }) => {
 						<Text style={styles.label}>Email Address</Text>
 						<TextInput
 							style={styles.input}
-							placeholder="lilshondy2@gmail.com"
+							placeholder="you@example.com"
 							placeholderTextColor="#B0B3B8"
 							value={email}
 							onChangeText={(t) => {
@@ -138,14 +144,18 @@ const SignInScreen = ({ navigation }) => {
 						</View>
 					</View>
 
+					{/* ── Forgot Password ── */}
 					<TouchableOpacity
 						style={styles.forgotWrap}
-						onPress={() => console.log("Forgot password")}>
+						// ✅ Fix 2 — replace console.log with navigation when screen exists
+						onPress={() => navigation.navigate("ForgotPassword")}>
 						<Text style={styles.forgotText}>Forgot password?</Text>
 					</TouchableOpacity>
 
+					{/* ── Error message ── */}
 					{error ? <Text style={styles.errorText}>{error}</Text> : null}
 
+					{/* ── Login Button ── */}
 					<View style={styles.btnWrap}>
 						<PrimaryButton
 							label={loading ? "Logging in..." : "Login"}
@@ -171,8 +181,9 @@ const SignInScreen = ({ navigation }) => {
 
 					{/* ── Continue with Google ── */}
 					<TouchableOpacity
-						style={styles.googleBtn}
-						onPress={handleGoogleLogin}
+						style={[styles.googleBtn, !googleAuthReady && { opacity: 0.6 }]}
+						onPress={handleGoogleSignIn}
+						disabled={!googleAuthReady}
 						activeOpacity={0.85}>
 						<Image
 							source={require("../../assets/images/Google.png")}
@@ -182,7 +193,7 @@ const SignInScreen = ({ navigation }) => {
 						<Text style={styles.googleText}>Continue with Google</Text>
 					</TouchableOpacity>
 
-
+					{/* ── Sign up link ── */}
 					<View style={styles.signupRow}>
 						<Text style={styles.signupText}>Don't have an account? </Text>
 						<TouchableOpacity

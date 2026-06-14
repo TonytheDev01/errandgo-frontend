@@ -73,6 +73,10 @@ export const logout = async () => {
 	await removeUser();
 };
 
+export const googleLogin = async ({ access_token }) => {
+	return await request("/auth/google", "POST", { access_token });
+};
+
 export const isAuthenticated = async () => {
 	const token = await getToken();
 	return token || null;

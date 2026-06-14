@@ -8,6 +8,7 @@ import {
 	ScrollView,
 	KeyboardAvoidingView,
 	Platform,
+	ActivityIndicator, // ✅ Added — needed for loading spinner
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -15,12 +16,39 @@ import HomeIndicator from "../components/HomeIndicator";
 import PrimaryButton from "../components/PrimaryButton";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/typography";
+import useGoogleAuth from "../hooks/useGoogleAuth";
+import { useAuth } from "../context/AuthContext";
 
 const SignUpScreen = ({ navigation }) => {
+	const { signIn } = useAuth();
 	const [agreed, setAgreed] = useState(false);
+	const [error, setError] = useState("");
+	const [loading, setLoading] = useState(false);
 
-	const handleGoogleSignUp = () => {
-		console.log("Google sign up pressed");
+	const { handleGoogleSignIn, googleAuthReady } = useGoogleAuth({
+		onLoading: (val) => setLoading(val),
+		onSuccess: async (token, user) => {
+			await signIn(token, user);
+		},
+		onError: (msg) => setError(msg),
+	});
+
+	// ✅ Added — blocks Google sign-in if terms not agreed
+	const handleGooglePress = () => {
+		if (!agreed) {
+			setError("Please agree to the Terms of Service and Privacy Policy.");
+			return;
+		}
+		handleGoogleSignIn();
+	};
+
+	// ✅ Added — blocks email sign-up if terms not agreed
+	const handleEmailPress = () => {
+		if (!agreed) {
+			setError("Please agree to the Terms of Service and Privacy Policy.");
+			return;
+		}
+		navigation.navigate("Register");
 	};
 
 	return (
@@ -34,6 +62,7 @@ const SignUpScreen = ({ navigation }) => {
 					contentContainerStyle={styles.scrollContent}
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}>
+					{/* ── Logo ── */}
 					<View style={styles.logoRow}>
 						<View style={styles.iconBg}>
 							<Image
@@ -55,12 +84,38 @@ const SignUpScreen = ({ navigation }) => {
 						Sign up and let trusted runners handle your tasks and deliveries.
 					</Text>
 
+					{/* ── Terms checkbox — moved above buttons so user agrees first ── */}
+					<TouchableOpacity
+						style={styles.termsRow}
+						onPress={() => {
+							setAgreed((v) => !v);
+							setError(""); // ✅ clears error when they tap checkbox
+						}}
+						activeOpacity={0.8}
+						accessibilityLabel="Agree to terms">
+						<View style={[styles.checkbox, agreed && styles.checkboxChecked]}>
+							{agreed && <Text style={styles.checkmark}>✓</Text>}
+						</View>
+						<Text style={styles.termsText}>
+							{"By creating an account, you agree to our\n"}
+							<Text style={styles.termsLink}>Terms of Service</Text>
+							{" and "}
+							<Text style={styles.termsLink}>Privacy Policy</Text>
+						</Text>
+					</TouchableOpacity>
+
+					{/* ── Error message ── */}
+					{error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+					{/* ── Sign up with email ── */}
 					<View style={styles.btnWrap}>
 						<PrimaryButton
 							label="Sign up with email"
-							onPress={() => navigation.navigate("Register")}
+							onPress={handleEmailPress}
 							variant="green"
 							fullWidth
+							// ✅ Dims button visually when terms not agreed
+							style={!agreed && { opacity: 0.6 }}
 						/>
 					</View>
 
@@ -73,8 +128,13 @@ const SignUpScreen = ({ navigation }) => {
 
 					{/* ── Continue with Google ── */}
 					<TouchableOpacity
-						style={styles.googleBtn}
-						onPress={handleGoogleSignUp}
+						style={[
+							styles.googleBtn,
+							// ✅ Dims when not ready OR terms not agreed
+							(!googleAuthReady || !agreed) && { opacity: 0.6 },
+						]}
+						onPress={handleGooglePress}
+						disabled={!googleAuthReady}
 						activeOpacity={0.85}>
 						<Image
 							source={require("../../assets/images/Google.png")}
@@ -84,21 +144,10 @@ const SignUpScreen = ({ navigation }) => {
 						<Text style={styles.googleText}>Continue with Google</Text>
 					</TouchableOpacity>
 
-					<TouchableOpacity
-						style={styles.termsRow}
-						onPress={() => setAgreed((v) => !v)}
-						activeOpacity={0.8}
-						accessibilityLabel="Agree to terms">
-						<View style={[styles.checkbox, agreed && styles.checkboxChecked]}>
-							{agreed && <Text style={styles.checkmark}>✓</Text>}
-						</View>
-						<Text style={styles.termsText}>
-							{"By creating an account, you agree to our\n "}
-							<Text style={styles.termsLink}>Terms of Service</Text>
-							{" and "}
-							<Text style={styles.termsLink}>Privacy Policy</Text>
-						</Text>
-					</TouchableOpacity>
+					{/* ✅ Loading spinner — shows during Google auth flow */}
+					{loading && (
+						<ActivityIndicator style={styles.spinner} color={COLORS.primary} />
+					)}
 
 					{/* ── Log in link ── */}
 					<View style={styles.loginRow}>
@@ -144,14 +193,8 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		marginRight: 10,
 	},
-	iconImage: {
-		width: 30,
-		height: 30,
-	},
-	wordmark: {
-		width: 125,
-		height: 36,
-	},
+	iconImage: { width: 30, height: 30 },
+	wordmark: { width: 125, height: 36 },
 
 	// ── Headings ──
 	heading: {
@@ -174,9 +217,7 @@ const styles = StyleSheet.create({
 	},
 
 	// ── Button ──
-	btnWrap: {
-		marginBottom: 25,
-	},
+	btnWrap: { marginBottom: 25 },
 
 	// ── Divider ──
 	dividerRow: {
@@ -208,11 +249,7 @@ const styles = StyleSheet.create({
 		backgroundColor: COLORS.white,
 		marginBottom: 24,
 	},
-	googleLogo: {
-		width: 20,
-		height: 20,
-		marginRight: 10,
-	},
+	googleLogo: { width: 20, height: 20, marginRight: 10 },
 	googleText: {
 		color: "#334155",
 		fontFamily: FONTS.poppinsExtraBold,
@@ -221,15 +258,26 @@ const styles = StyleSheet.create({
 		lineHeight: 24,
 	},
 
+	// ── Spinner ──
+	spinner: { marginBottom: 16 },
+
+	// ── Error ──
+	errorText: {
+		color: "#FF384A",
+		fontFamily: FONTS.poppinsMedium,
+		fontSize: 14,
+		marginBottom: 12,
+		textAlign: "center",
+	},
+
 	// ── Terms ──
 	termsRow: {
 		flexDirection: "row",
-		justifyContent: "center",
 		alignItems: "center",
 		width: "100%",
-		paddingLeft: "20",
-		marginRight: "10",
-		marginBottom: 32,
+		paddingLeft: 20,
+		marginRight: 10,
+		marginBottom: 20, // ✅ reduced from 32 — error message adds spacing naturally
 	},
 	checkbox: {
 		width: 20,

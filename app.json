@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "errandgo",
     "name": "ErrandGo",
     "slug": "errandgo-frontend",
     "version": "1.0.0",
@@ -17,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/Errand-logo.png",
+        "foregroundImage": "./assets/images/app-icon1.png",
         "backgroundColor": "#052E16"
       },
       "edgeToEdgeEnabled": true,
@@ -27,7 +28,8 @@
       "favicon": "./assets/images/app-icon1.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {
