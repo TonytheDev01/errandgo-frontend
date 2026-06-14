@@ -19,7 +19,15 @@ import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/typography";
 import * as authService from "../services/authService";
 
-const COUNTRIES = ["Nigeria", "Ghana", "Kenya", "South Africa", "Other"];
+// ✅ Countries with dial codes
+const COUNTRIES = [
+	{ label: "Nigeria", dialCode: "+234" },
+	{ label: "Ghana", dialCode: "+233" },
+	{ label: "Kenya", dialCode: "+254" },
+	{ label: "South Africa", dialCode: "+27" },
+	{ label: "Other", dialCode: "+00" },
+];
+
 const GENDERS = ["Male", "Female", "Prefer not to say"];
 
 const RegisterScreen = ({ navigation }) => {
@@ -28,6 +36,7 @@ const RegisterScreen = ({ navigation }) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [mobile, setMobile] = useState("");
 	const [country, setCountry] = useState("");
+	const [dialCode, setDialCode] = useState("+234"); // ✅ dynamic dial code
 	const [city, setCity] = useState("");
 	const [gender, setGender] = useState("");
 	const [showCountry, setShowCountry] = useState(false);
@@ -35,7 +44,6 @@ const RegisterScreen = ({ navigation }) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
-	// ── Password strength state ──
 	const [passwordStrength, setPasswordStrength] = useState({
 		score: 0,
 		hasMinLength: false,
@@ -45,7 +53,6 @@ const RegisterScreen = ({ navigation }) => {
 		hasSpecial: false,
 	});
 
-	// ── Password strength checker ──
 	const checkPasswordStrength = (pwd) => {
 		const checks = {
 			hasMinLength: pwd.length >= 8,
@@ -58,7 +65,6 @@ const RegisterScreen = ({ navigation }) => {
 		setPasswordStrength({ score, ...checks });
 	};
 
-	// ── Strength label + color ──
 	const getStrengthLabel = (score) => {
 		if (score <= 1) return { label: "Very Weak", color: "#FF384A" };
 		if (score <= 2) return { label: "Weak", color: "#FF384A" };
@@ -89,24 +95,28 @@ const RegisterScreen = ({ navigation }) => {
 			setError("Password must be at least 8 characters.");
 			return;
 		}
+		if (!mobile.trim()) {
+			setError("Mobile number is required.");
+			return;
+		}
 		if (!country) {
 			setError("Please select your country.");
 			return;
 		}
+		if (!gender) {
+			setError("Please select your gender.");
+			return;
+		}
 
-		const location = city.trim() ? `${city.trim()}, ${country}` : country;
-
-		setLoading(true);
+		setLoading(true); // ✅ Fix — removed duplicate setLoading(false)
 		const result = await authService.register({
 			email: email.trim().toLowerCase(),
 			password,
-			mobile_number: mobile.trim(),
+			mobile_number: `${dialCode}${mobile.trim()}`, // ✅ full number with dial code
 			country,
 			city_community: city.trim(),
 			gender,
 		});
-		
-		setLoading(false);
 		setLoading(false);
 
 		if (result.ok) {
@@ -190,7 +200,6 @@ const RegisterScreen = ({ navigation }) => {
 						/>
 					</View>
 
-					{/* ── Heading ── */}
 					<Text style={styles.heading}>Create your account</Text>
 					<Text style={styles.subheading}>
 						Set up your profile so runners can reach you for errands.
@@ -201,7 +210,7 @@ const RegisterScreen = ({ navigation }) => {
 						<Text style={styles.label}>Email</Text>
 						<TextInput
 							style={styles.input}
-							placeholder="lilshondy2@gmail.com"
+							placeholder="you@example.com"
 							placeholderTextColor="#B0B3B8"
 							value={email}
 							onChangeText={(t) => {
@@ -246,10 +255,8 @@ const RegisterScreen = ({ navigation }) => {
 							</TouchableOpacity>
 						</View>
 
-						{/* ── Password strength indicator ── */}
 						{password.length > 0 && (
 							<View style={styles.strengthWrap}>
-								{/* Strength bars */}
 								<View style={styles.strengthBarRow}>
 									{[1, 2, 3, 4, 5].map((level) => (
 										<View
@@ -266,13 +273,9 @@ const RegisterScreen = ({ navigation }) => {
 										/>
 									))}
 								</View>
-
-								{/* Strength label */}
 								<Text style={[styles.strengthLabel, { color: strengthColor }]}>
 									{strengthLabel}
 								</Text>
-
-								{/* Checklist */}
 								<View style={styles.checkList}>
 									{[
 										{ key: "hasMinLength", label: "At least 8 characters" },
@@ -320,12 +323,34 @@ const RegisterScreen = ({ navigation }) => {
 						)}
 					</View>
 
+					{/* ── Country dropdown — must come before mobile ── */}
+					{/* ✅ So dial code updates before user types number */}
+					<DropdownField
+						label="Country"
+						value={country}
+						placeholder="Select Country"
+						open={showCountry}
+						onToggle={() => {
+							setShowCountry((v) => !v);
+							setShowGender(false);
+						}}
+						options={COUNTRIES.map((c) => c.label)}
+						onSelect={(val) => {
+							setCountry(val);
+							// ✅ Update dial code when country changes
+							const selected = COUNTRIES.find((c) => c.label === val);
+							setDialCode(selected?.dialCode || "+00");
+							setError("");
+						}}
+					/>
+
 					{/* ── Mobile number ── */}
 					<View style={styles.fieldGroup}>
 						<Text style={styles.label}>Mobile Number</Text>
 						<View style={styles.mobileWrap}>
+							{/* ✅ Dial code now updates dynamically */}
 							<View style={styles.dialCode}>
-								<Text style={styles.dialText}>+233</Text>
+								<Text style={styles.dialText}>{dialCode}</Text>
 							</View>
 							<TextInput
 								style={styles.mobileInput}
@@ -337,23 +362,6 @@ const RegisterScreen = ({ navigation }) => {
 							/>
 						</View>
 					</View>
-
-					{/* ── Country dropdown ── */}
-					<DropdownField
-						label="Country"
-						value={country}
-						placeholder="Select Country"
-						open={showCountry}
-						onToggle={() => {
-							setShowCountry((v) => !v);
-							setShowGender(false);
-						}}
-						options={COUNTRIES}
-						onSelect={(val) => {
-							setCountry(val);
-							setError("");
-						}}
-					/>
 
 					{/* ── City/Community ── */}
 					<View style={styles.fieldGroup}>
@@ -382,10 +390,8 @@ const RegisterScreen = ({ navigation }) => {
 						onSelect={setGender}
 					/>
 
-					{/* ── API error message ── */}
 					{error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-					{/* ── Create account button ── */}
 					<View style={styles.btnWrap}>
 						<PrimaryButton
 							label={loading ? "Creating account..." : "Create account"}
@@ -403,30 +409,16 @@ const RegisterScreen = ({ navigation }) => {
 					</View>
 				</ScrollView>
 			</KeyboardAvoidingView>
-
 			<HomeIndicator color={COLORS.primary} />
 		</SafeAreaView>
 	);
 };
 
 const styles = StyleSheet.create({
-	safeArea: {
-		flex: 1,
-		backgroundColor: "#F8FAF5",
-	},
+	safeArea: { flex: 1, backgroundColor: "#F8FAF5" },
 	flex: { flex: 1 },
-	scrollContent: {
-		paddingHorizontal: 24,
-		paddingTop: 24,
-		paddingBottom: 32,
-	},
-
-	// ── Logo ──
-	logoRow: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginBottom: 32,
-	},
+	scrollContent: { paddingHorizontal: 24, paddingTop: 24, paddingBottom: 32 },
+	logoRow: { flexDirection: "row", alignItems: "center", marginBottom: 32 },
 	iconBg: {
 		width: 50,
 		height: 50,
@@ -438,8 +430,6 @@ const styles = StyleSheet.create({
 	},
 	iconImage: { width: 30, height: 30 },
 	wordmark: { width: 125, height: 36 },
-
-	// ── Headings ──
 	heading: {
 		color: "#000",
 		fontFamily: FONTS.poppinsExtraBold,
@@ -455,11 +445,7 @@ const styles = StyleSheet.create({
 		lineHeight: 28,
 		marginBottom: 32,
 	},
-
-	// ── Form fields ──
-	fieldGroup: {
-		marginBottom: 16,
-	},
+	fieldGroup: { marginBottom: 16 },
 	label: {
 		color: "rgba(0,0,0,0.60)",
 		fontFamily: FONTS.poppinsMedium,
@@ -476,11 +462,7 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: COLORS.textDark,
 	},
-	inputDisabled: {
-		opacity: 0.5,
-	},
-
-	// ── Password ──
+	inputDisabled: { opacity: 0.5 },
 	passwordWrap: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -497,47 +479,19 @@ const styles = StyleSheet.create({
 	},
 	eyeBtn: { padding: 4 },
 	eyeIcon: { width: 18, height: 18 },
-
-	// ── Password strength ──
-	strengthWrap: {
-		marginTop: 10,
-	},
-	strengthBarRow: {
-		flexDirection: "row",
-		marginBottom: 6,
-	},
-	strengthBar: {
-		flex: 1,
-		height: 4,
-		borderRadius: 100,
-		marginHorizontal: 2,
-	},
+	strengthWrap: { marginTop: 10 },
+	strengthBarRow: { flexDirection: "row", marginBottom: 6 },
+	strengthBar: { flex: 1, height: 4, borderRadius: 100, marginHorizontal: 2 },
 	strengthLabel: {
 		fontFamily: FONTS.poppinsMedium,
 		fontSize: 12,
 		fontWeight: "600",
 		marginBottom: 8,
 	},
-	checkList: {
-		marginTop: 4,
-	},
-	checkRow: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginBottom: 4,
-	},
-	checkDot: {
-		fontSize: 12,
-		fontWeight: "700",
-		marginRight: 6,
-		width: 14,
-	},
-	checkText: {
-		fontFamily: FONTS.poppinsMedium,
-		fontSize: 12,
-	},
-
-	// ── Mobile ──
+	checkList: { marginTop: 4 },
+	checkRow: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
+	checkDot: { fontSize: 12, fontWeight: "700", marginRight: 6, width: 14 },
+	checkText: { fontFamily: FONTS.poppinsMedium, fontSize: 12 },
 	mobileWrap: {
 		flexDirection: "row",
 		height: 50,
@@ -563,8 +517,6 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: COLORS.textDark,
 	},
-
-	// ── Dropdown ──
 	dropdownBtn: {
 		height: 50,
 		paddingHorizontal: 16,
@@ -579,16 +531,9 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: COLORS.textDark,
 	},
-	dropdownPlaceholder: {
-		color: "#B0B3B8",
-	},
-	dropdownArrowIcon: {
-		width: 8,
-		height: 13,
-	},
-	dropdownArrowOpen: {
-		transform: [{ rotate: "90deg" }],
-	},
+	dropdownPlaceholder: { color: "#B0B3B8" },
+	dropdownArrowIcon: { width: 8, height: 13 },
+	dropdownArrowOpen: { transform: [{ rotate: "90deg" }] },
 	dropdownList: {
 		backgroundColor: COLORS.white,
 		borderRadius: 12,
@@ -608,8 +553,6 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: COLORS.textDark,
 	},
-
-	// ── Error ──
 	errorText: {
 		color: "#FF384A",
 		fontFamily: FONTS.poppinsMedium,
@@ -617,14 +560,8 @@ const styles = StyleSheet.create({
 		marginBottom: 12,
 		textAlign: "center",
 	},
-
-	// ── Button ──
-	btnWrap: {
-		marginTop: 8,
-	},
-	spinner: {
-		marginTop: 12,
-	},
+	btnWrap: { marginTop: 8 },
+	spinner: { marginTop: 12 },
 });
 
 export default RegisterScreen;
