@@ -49,7 +49,7 @@ export const removeUser = () => AsyncStorage.removeItem(USER_KEY);
 // ── AUTH ENDPOINTS
 
 export const register = async ({ email, password, location }) => {
-	return await request("/auth/register", "POST", {
+	return await request("/register", "POST", {
 		email,
 		password,
 		location,
