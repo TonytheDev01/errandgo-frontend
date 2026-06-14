@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@env";
-const BASE_URL = API_BASE_URL || "https://errand-go-backend.onrender.com";
+
+const BASE_URL = API_BASE_URL || "https://errand-go-backend.onrender.com/api";
 const TOKEN_KEY = "errandgo_token";
 const USER_KEY = "errandgo_user";
 
@@ -12,13 +13,10 @@ const request = async (
 ) => {
 	const headers = { "Content-Type": "application/json" };
 	if (token) headers["Authorization"] = `Bearer ${token}`;
-
 	const config = { method, headers };
 	if (body) config.body = JSON.stringify(body);
-
 	console.log("REQUEST URL:", `${BASE_URL}${endpoint}`);
 	console.log("REQUEST BODY:", JSON.stringify(body));
-
 	try {
 		const response = await fetch(`${BASE_URL}${endpoint}`, config);
 		const data = await response.json();
@@ -47,25 +45,35 @@ export const getUser = async () => {
 export const removeUser = () => AsyncStorage.removeItem(USER_KEY);
 
 // ── AUTH ENDPOINTS
-
-export const register = async ({ email, password, location }) => {
+// ✅ Single correct register — matches backend database schema
+export const register = async ({
+	email,
+	password,
+	mobile_number,
+	country,
+	city_community,
+	gender,
+}) => {
 	return await request("/register", "POST", {
 		email,
 		password,
-		location,
+		mobile_number,
+		country,
+		city_community,
+		gender,
 	});
 };
 
 export const verifyEmail = async ({ email, otp_code }) => {
-	return await request("/auth/verify-email", "POST", { email, otp_code });
+	return await request("/verify-email", "POST", { email, otp_code });
 };
 
 export const resendOTP = async ({ email }) => {
-	return await request("/auth/resend-otp", "POST", { email });
+	return await request("/resend-otp", "POST", { email });
 };
 
 export const login = async ({ email, password }) => {
-	return await request("/auth/login", "POST", { email, password });
+	return await request("/login", "POST", { email, password });
 };
 
 export const logout = async () => {

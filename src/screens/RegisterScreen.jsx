@@ -100,8 +100,13 @@ const RegisterScreen = ({ navigation }) => {
 		const result = await authService.register({
 			email: email.trim().toLowerCase(),
 			password,
-			location,
+			mobile_number: mobile.trim(),
+			country,
+			city_community: city.trim(),
+			gender,
 		});
+		
+		setLoading(false);
 		setLoading(false);
 
 		if (result.ok) {
