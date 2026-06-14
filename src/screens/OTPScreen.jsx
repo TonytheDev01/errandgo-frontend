@@ -20,7 +20,7 @@ import { useAuth } from "../context/AuthContext";
 
 const { width: SW } = Dimensions.get("window");
 const OTP_LENGTH = 6;
-const RESEND_SECONDS = 60;
+const RESEND_SECONDS = 30;
 
 const OTPScreen = ({ navigation, route }) => {
 	const { signIn } = useAuth();

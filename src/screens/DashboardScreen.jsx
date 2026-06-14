@@ -13,6 +13,7 @@ import { StatusBar } from "expo-status-bar";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/typography";
+import { useAuth } from "../context/AuthContext"; 
 import SettingsModal from "./SettingsModal";
 import NotificationsModal from "./NotificationsModal";
 
@@ -32,7 +33,7 @@ const QUICK_ACTIONS = [
 		label: "Shop Items",
 		sub: "We shop, you relax.",
 		iconBg: "#FFF7ED",
-		icon: require("../../assets/images/shop-icon.png"), 
+		icon: require("../../assets/images/shop-icon.png"),
 		textColor: COLORS.primary,
 		cardBg: "#FFF",
 		btnBg: "#F0FDF4",
@@ -44,7 +45,7 @@ const QUICK_ACTIONS = [
 		label: "Request Errand",
 		sub: "We'll run it for you.",
 		iconBg: "rgba(255,255,255,0.2)",
-		icon: require("../../assets/images/plus.png"), 
+		icon: require("../../assets/images/plus.png"),
 		textColor: "#FFF",
 		cardBg: COLORS.primary,
 		btnBg: "#FFF",
@@ -57,7 +58,7 @@ const QUICK_ACTIONS = [
 		label: "Send Delivery",
 		sub: "Fast & Reliable Delivery.",
 		iconBg: "#FAF5FF",
-		icon: require("../../assets/images/Send.png"), 
+		icon: require("../../assets/images/Send.png"),
 		textColor: COLORS.primary,
 		cardBg: "#FFF",
 		btnBg: "#F0FDF4",
@@ -69,7 +70,7 @@ const QUICK_ACTIONS = [
 		label: "Track Orders",
 		sub: "Track all your orders.",
 		iconBg: "#EFF6FF",
-		icon: require("../../assets/images/location.png"), 
+		icon: require("../../assets/images/location.png"),
 		textColor: COLORS.primary,
 		cardBg: "#FFF",
 		btnBg: "#F0FDF4",
@@ -82,23 +83,23 @@ const NAV_ITEMS = [
 	{
 		key: "home",
 		label: "Home",
-		icon: require("../../assets/images/home.png"), 
+		icon: require("../../assets/images/home.png"),
 	},
 	{
 		key: "activity",
 		label: "Activity",
-		icon: require("../../assets/images/activity.png"), 
+		icon: require("../../assets/images/activity.png"),
 	},
 	{
 		key: "create",
 		label: "Create",
-		icon: require("../../assets/images/plus.png"), 
+		icon: require("../../assets/images/plus.png"),
 		isCenter: true,
 	},
 	{
 		key: "orders",
 		label: "Orders",
-		icon: require("../../assets/images/order.png"), 
+		icon: require("../../assets/images/order.png"),
 	},
 	{
 		key: "profile",
@@ -108,20 +109,23 @@ const NAV_ITEMS = [
 ];
 
 const DashboardScreen = ({ navigation }) => {
+	const { user } = useAuth(); // 
 	const [greeting, setGreeting] = useState(getGreeting());
 	const [activeNav, setActiveNav] = useState("home");
 	const [showSettings, setShowSettings] = useState(false);
 	const [showNotifications, setShowNotifications] = useState(false);
 
 	useEffect(() => {
-		const interval = setInterval(() => setGreeting(getGreeting()), 7200);
+		const interval = setInterval(() => setGreeting(getGreeting()), 7200000);
 		return () => clearInterval(interval);
 	}, []);
 
-	// Dynamic user — replace with AuthContext user once wired
-	const user = {
-		name: "Tunde",
-		avatar: null, // replace with user.avatar from context
+	const displayName = user?.full_name?.split(" ")[0] || user?.name || "there";
+
+	const handleProfilePress = () => {
+		if (navigation.getState().routeNames.includes("Profile")) {
+			navigation.navigate("Profile");
+		}
 	};
 
 	return (
@@ -132,19 +136,20 @@ const DashboardScreen = ({ navigation }) => {
 				style={styles.scroll}
 				contentContainerStyle={styles.scrollContent}
 				showsVerticalScrollIndicator={false}>
+				{/* ── Header ── */}
 				<View style={styles.headerRow}>
 					{/* Profile avatar */}
 					<TouchableOpacity
-						onPress={() => navigation.navigate("Profile")}
+						onPress={handleProfilePress} 
 						accessibilityLabel="View profile">
-						{user.avatar ? (
+						{user?.avatar ? (
 							<Image
 								source={{ uri: user.avatar }}
 								style={styles.avatar}
 								resizeMode="cover"
 							/>
 						) : (
-							/* Placeholder until user avatar loads */
+							// Placeholder until user avatar loads
 							<View style={styles.avatarPlaceholder}>
 								<Ionicons name="person" size={22} color="#FFF" />
 							</View>
@@ -154,7 +159,9 @@ const DashboardScreen = ({ navigation }) => {
 					{/* Greeting + name */}
 					<View style={styles.greetingBlock}>
 						<Text style={styles.greetingText}>{greeting}</Text>
-						<Text style={styles.greetingName}>Hello {user.name}</Text>
+						<Text style={styles.greetingName}>
+							Hello {displayName} 
+						</Text>
 					</View>
 
 					{/* Notification + Settings */}
@@ -178,11 +185,11 @@ const DashboardScreen = ({ navigation }) => {
 								style={{ width: 24, height: 24 }}
 								resizeMode="contain"
 							/>
-						</TouchableOpacity>{" "}
+						</TouchableOpacity>
 					</View>
 				</View>
 
-				{/* LIVE TRACKING CARD */}
+				{/* ── LIVE TRACKING CARD ── */}
 				<View style={styles.trackingCard}>
 					<View style={styles.trackingHeader}>
 						<View style={styles.trackingLabelRow}>
@@ -199,7 +206,7 @@ const DashboardScreen = ({ navigation }) => {
 								source={require("../../assets/images/arrow-rightt.png")}
 								style={{ width: 24, height: 24 }}
 								resizeMode="contain"
-							/>{" "}
+							/>
 						</TouchableOpacity>
 					</View>
 
@@ -222,7 +229,6 @@ const DashboardScreen = ({ navigation }) => {
 							/>
 						</View>
 
-						{/* Name + rating */}
 						<View style={styles.runnerInfo}>
 							<Text style={styles.runnerName}>Nelly</Text>
 							<View style={styles.ratingRow}>
@@ -252,13 +258,13 @@ const DashboardScreen = ({ navigation }) => {
 									source={require("../../assets/images/Phone.png")}
 									style={{ width: 16, height: 16 }}
 									resizeMode="contain"
-								/>{" "}
+								/>
 							</TouchableOpacity>
 						</View>
 					</View>
 				</View>
 
-				{/* QUICK ACTIONS */}
+				{/* ── QUICK ACTIONS ── */}
 				<View style={styles.sectionWrap}>
 					<View style={styles.sectionHeader}>
 						<Text style={styles.sectionTitle}>Quick actions</Text>
@@ -267,13 +273,11 @@ const DashboardScreen = ({ navigation }) => {
 						</TouchableOpacity>
 					</View>
 
-					{/* 2×2 grid */}
 					<View style={styles.cardsGrid}>
 						{QUICK_ACTIONS.map((card) => (
 							<View
 								key={card.id}
 								style={[styles.actionCard, { backgroundColor: card.cardBg }]}>
-								{/* Background ellipse for card 2 */}
 								{card.hasEllipse && <View style={styles.cardEllipse} />}
 
 								<View
@@ -288,7 +292,6 @@ const DashboardScreen = ({ navigation }) => {
 									/>
 								</View>
 
-								{/* Label + sub */}
 								<Text style={[styles.cardLabel, { color: card.textColor }]}>
 									{card.label}
 								</Text>
@@ -315,7 +318,7 @@ const DashboardScreen = ({ navigation }) => {
 					</View>
 				</View>
 
-				{/*  RECENT ACTIVITY  */}
+				{/* ── RECENT ACTIVITY ── */}
 				<View style={styles.sectionWrap}>
 					<View style={styles.sectionHeader}>
 						<Text style={styles.sectionTitle}>Recent Activity</Text>
@@ -324,7 +327,6 @@ const DashboardScreen = ({ navigation }) => {
 						</TouchableOpacity>
 					</View>
 
-					{/* Empty state */}
 					<View style={styles.activityCard}>
 						<Image
 							source={require("../../assets/images/Activity-icon.png")}
@@ -338,7 +340,7 @@ const DashboardScreen = ({ navigation }) => {
 					</View>
 				</View>
 
-				{/* CTA BANNER — Need something done?*/}
+				{/* ── CTA BANNER ── */}
 				<TouchableOpacity style={styles.ctaBanner} activeOpacity={0.9}>
 					<View style={styles.ctaTextBlock}>
 						<Text style={styles.ctaTitle}>Need something done today?</Text>
@@ -346,21 +348,19 @@ const DashboardScreen = ({ navigation }) => {
 							Post an errand and get matched in minutes.
 						</Text>
 					</View>
-					{/* Orange icon button */}
 					<View style={styles.ctaIconBtn}>
 						<Image
 							source={require("../../assets/images/arrow-rit.png")}
 							style={{ width: 23.59, height: 23.59 }}
 							resizeMode="contain"
-						/>{" "}
+						/>
 					</View>
 				</TouchableOpacity>
 
-				{/* Bottom padding so content clears the nav bar */}
 				<View style={{ height: 100 }} />
 			</ScrollView>
 
-			{/* BOTTOM NAVIGATION BAR */}
+			{/* ── BOTTOM NAVIGATION BAR ── */}
 			<View style={styles.navBar}>
 				{NAV_ITEMS.map((item) => {
 					const isActive = activeNav === item.key;
@@ -398,7 +398,6 @@ const DashboardScreen = ({ navigation }) => {
 								]}
 								resizeMode="contain"
 							/>
-
 							<Text
 								style={[styles.navLabel, isActive && styles.navLabelActive]}>
 								{item.label}
@@ -413,7 +412,6 @@ const DashboardScreen = ({ navigation }) => {
 				onClose={() => setShowSettings(false)}
 				navigation={navigation}
 			/>
-
 			<NotificationsModal
 				visible={showNotifications}
 				onClose={() => setShowNotifications(false)}
@@ -427,9 +425,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: "#F5F0EB",
 	},
-	scroll: {
-		flex: 1,
-	},
+	scroll: { flex: 1 },
 	scrollContent: {
 		paddingHorizontal: 24,
 		paddingTop: 16,
@@ -535,13 +531,12 @@ const styles = StyleSheet.create({
 		color: "#374151",
 		fontFamily: FONTS.poppinsBold,
 		fontSize: 14,
-		fontstyle: "normal",
 		fontWeight: "600",
 		lineHeight: 19.66,
 		marginRight: 2,
 	},
 
-	// Map
+	// ── Map ──
 	mapWrap: {
 		width: "100%",
 		height: 95,
@@ -556,14 +551,12 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 
-	// Runner
+	// ── Runner ──
 	runnerRow: {
 		flexDirection: "row",
 		alignItems: "center",
 	},
-	runnerAvatarWrap: {
-		marginRight: 8,
-	},
+	runnerAvatarWrap: { marginRight: 8 },
 	runnerAvatarPlaceholder: {
 		width: 24,
 		height: 24,
@@ -572,9 +565,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
-	runnerInfo: {
-		flex: 1,
-	},
+	runnerInfo: { flex: 1 },
 	runnerName: {
 		color: "#111827",
 		fontFamily: FONTS.poppinsExtraBold,
@@ -607,9 +598,7 @@ const styles = StyleSheet.create({
 	},
 
 	// ── Section wrapper ──
-	sectionWrap: {
-		marginBottom: 20,
-	},
+	sectionWrap: { marginBottom: 20 },
 	sectionHeader: {
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -804,9 +793,7 @@ const styles = StyleSheet.create({
 		fontSize: 10,
 		marginTop: 3,
 	},
-	navLabelActive: {
-		color: COLORS.primary,
-	},
+	navLabelActive: { color: COLORS.primary },
 	navCenterBtn: {
 		alignItems: "center",
 		justifyContent: "center",
