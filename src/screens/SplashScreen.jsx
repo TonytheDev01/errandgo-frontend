@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native"; 
+import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import StatusBar from "../components/StatusBar";
+import { StatusBar } from "expo-status-bar";
 import HomeIndicator from "../components/HomeIndicator";
 import ErrandGoLogo from "../components/ErrandGoLogo";
 import { COLORS } from "../constants/colors";
-import { FONTS } from "../constants/typography"; 
+import { FONTS } from "../constants/typography";
 const SplashScreen = ({ navigation }) => {
 	useEffect(() => {
 		const t = setTimeout(() => navigation.replace("Onboarding"), 2500);
@@ -14,7 +14,7 @@ const SplashScreen = ({ navigation }) => {
 
 	return (
 		<SafeAreaView style={styles.screen}>
-			<StatusBar theme="dark" />
+			<StatusBar theme="light" />
 			<View style={styles.body}>
 				<ErrandGoLogo size="md" theme="dark" />
 				<Text style={styles.tagline}>Your errands, handled.</Text>
