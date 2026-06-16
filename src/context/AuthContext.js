@@ -11,7 +11,7 @@ import {
 // ── DEV BYPASS ────────────────────────────────────────────
 // Must match DEV_BYPASS in AppNavigator.js.
 // SET TO false BEFORE ANY PRODUCTION COMMIT.
-const DEV_BYPASS = true;
+const DEV_BYPASS = false;
 
 const DEV_MOCK_USER = {
 	name: "Tunde",

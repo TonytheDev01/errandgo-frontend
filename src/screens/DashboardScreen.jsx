@@ -343,23 +343,6 @@ const DashboardScreen = ({ navigation }) => {
 					</View>
 				</TouchableOpacity>
 
-				{/* ──────────────────────────────────────────────────────────
-				    ⚠️  DEV ONLY — REMOVE THIS ENTIRE BLOCK BEFORE PRODUCTION
-				    Used to test OTP and SuccessOverlay screens while
-				    DEV_BYPASS is true and auth flow is skipped.
-				    Once backend auth is fully ready:
-				    1. Delete this TouchableOpacity block
-				    2. Set DEV_BYPASS = false in AppNavigator.js
-				    3. Set DEV_BYPASS = false in AuthContext.js
-				────────────────────────────────────────────────────────── */}
-				<TouchableOpacity
-					onPress={() =>
-						navigation.navigate("OTP", { email: "test@errandgo.com" })
-					}
-					style={styles.devBtn}>
-					<Text style={styles.devBtnText}>⚠️ DEV: Test OTP Screen</Text>
-				</TouchableOpacity>
-				{/* ── END DEV ONLY ── */}
 
 				<View style={{ height: 100 }} />
 			</ScrollView>

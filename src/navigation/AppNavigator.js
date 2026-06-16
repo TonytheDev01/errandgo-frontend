@@ -17,7 +17,7 @@ const Stack = createNativeStackNavigator();
 // ── DEV BYPASS ────────────────────────────────────────────
 // Skips auth and loads Dashboard directly for UI testing.
 // ⚠️  REMOVE THIS LINE (set to false) when backend is fully ready
-const DEV_BYPASS = true;
+const DEV_BYPASS = false;
 // ─────────────────────────────────────────────────────────
 
 const AppNavigator = () => {
