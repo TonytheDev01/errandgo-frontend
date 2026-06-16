@@ -13,7 +13,7 @@ import { StatusBar } from "expo-status-bar";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/typography";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
 import SettingsModal from "./SettingsModal";
 import NotificationsModal from "./NotificationsModal";
 
@@ -36,8 +36,8 @@ const QUICK_ACTIONS = [
 		icon: require("../../assets/images/shop-icon.png"),
 		textColor: COLORS.primary,
 		cardBg: "#FFF",
-		btnBg: "#F0FDF4",
-		btnColor: COLORS.primary,
+		btnBg: "#16A34A",
+		btnColor: "#FFF",
 		dark: false,
 	},
 	{
@@ -61,8 +61,8 @@ const QUICK_ACTIONS = [
 		icon: require("../../assets/images/Send.png"),
 		textColor: COLORS.primary,
 		cardBg: "#FFF",
-		btnBg: "#F0FDF4",
-		btnColor: COLORS.primary,
+		btnBg: "#16A34A",
+		btnColor: "#FFF",
 		dark: false,
 	},
 	{
@@ -73,18 +73,14 @@ const QUICK_ACTIONS = [
 		icon: require("../../assets/images/location.png"),
 		textColor: COLORS.primary,
 		cardBg: "#FFF",
-		btnBg: "#F0FDF4",
-		btnColor: COLORS.primary,
+		btnBg: "#16A34A",
+		btnColor: "#FFF",
 		dark: false,
 	},
 ];
 
 const NAV_ITEMS = [
-	{
-		key: "home",
-		label: "Home",
-		icon: require("../../assets/images/home.png"),
-	},
+	{ key: "home", label: "Home", icon: require("../../assets/images/home.png") },
 	{
 		key: "activity",
 		label: "Activity",
@@ -109,7 +105,7 @@ const NAV_ITEMS = [
 ];
 
 const DashboardScreen = ({ navigation }) => {
-	const { user } = useAuth(); // 
+	const { user } = useAuth();
 	const [greeting, setGreeting] = useState(getGreeting());
 	const [activeNav, setActiveNav] = useState("home");
 	const [showSettings, setShowSettings] = useState(false);
@@ -138,9 +134,8 @@ const DashboardScreen = ({ navigation }) => {
 				showsVerticalScrollIndicator={false}>
 				{/* ── Header ── */}
 				<View style={styles.headerRow}>
-					{/* Profile avatar */}
 					<TouchableOpacity
-						onPress={handleProfilePress} 
+						onPress={handleProfilePress}
 						accessibilityLabel="View profile">
 						{user?.avatar ? (
 							<Image
@@ -149,22 +144,17 @@ const DashboardScreen = ({ navigation }) => {
 								resizeMode="cover"
 							/>
 						) : (
-							// Placeholder until user avatar loads
 							<View style={styles.avatarPlaceholder}>
 								<Ionicons name="person" size={22} color="#FFF" />
 							</View>
 						)}
 					</TouchableOpacity>
 
-					{/* Greeting + name */}
 					<View style={styles.greetingBlock}>
 						<Text style={styles.greetingText}>{greeting}</Text>
-						<Text style={styles.greetingName}>
-							Hello {displayName} 
-						</Text>
+						<Text style={styles.greetingName}>Hello {displayName}</Text>
 					</View>
 
-					{/* Notification + Settings */}
 					<View style={styles.headerIcons}>
 						<TouchableOpacity
 							style={styles.headerIconBtn}
@@ -210,7 +200,6 @@ const DashboardScreen = ({ navigation }) => {
 						</TouchableOpacity>
 					</View>
 
-					{/* Map image */}
 					<View style={styles.mapWrap}>
 						<Image
 							source={require("../../assets/images/Dash-map.png")}
@@ -219,7 +208,6 @@ const DashboardScreen = ({ navigation }) => {
 						/>
 					</View>
 
-					{/* Runner row */}
 					<View style={styles.runnerRow}>
 						<View style={styles.runnerAvatarWrap}>
 							<Image
@@ -228,7 +216,6 @@ const DashboardScreen = ({ navigation }) => {
 								resizeMode="contain"
 							/>
 						</View>
-
 						<View style={styles.runnerInfo}>
 							<Text style={styles.runnerName}>Nelly</Text>
 							<View style={styles.ratingRow}>
@@ -240,7 +227,6 @@ const DashboardScreen = ({ navigation }) => {
 								<Text style={styles.ratingText}>4.8</Text>
 							</View>
 						</View>
-
 						<View style={styles.runnerActions}>
 							<TouchableOpacity
 								style={styles.runnerActionBtn}
@@ -256,7 +242,7 @@ const DashboardScreen = ({ navigation }) => {
 								accessibilityLabel="Call runner">
 								<Image
 									source={require("../../assets/images/Phone.png")}
-									style={{ width: 16, height: 16 }}
+									style={{ width: 16, height: 14.4 }}
 									resizeMode="contain"
 								/>
 							</TouchableOpacity>
@@ -357,6 +343,24 @@ const DashboardScreen = ({ navigation }) => {
 					</View>
 				</TouchableOpacity>
 
+				{/* ──────────────────────────────────────────────────────────
+				    ⚠️  DEV ONLY — REMOVE THIS ENTIRE BLOCK BEFORE PRODUCTION
+				    Used to test OTP and SuccessOverlay screens while
+				    DEV_BYPASS is true and auth flow is skipped.
+				    Once backend auth is fully ready:
+				    1. Delete this TouchableOpacity block
+				    2. Set DEV_BYPASS = false in AppNavigator.js
+				    3. Set DEV_BYPASS = false in AuthContext.js
+				────────────────────────────────────────────────────────── */}
+				<TouchableOpacity
+					onPress={() =>
+						navigation.navigate("OTP", { email: "test@errandgo.com" })
+					}
+					style={styles.devBtn}>
+					<Text style={styles.devBtnText}>⚠️ DEV: Test OTP Screen</Text>
+				</TouchableOpacity>
+				{/* ── END DEV ONLY ── */}
+
 				<View style={{ height: 100 }} />
 			</ScrollView>
 
@@ -421,22 +425,12 @@ const DashboardScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-	safeArea: {
-		flex: 1,
-		backgroundColor: "#F5F0EB",
-	},
+	safeArea: { flex: 1, backgroundColor: "#F5F0EB" },
 	scroll: { flex: 1 },
-	scrollContent: {
-		paddingHorizontal: 24,
-		paddingTop: 16,
-	},
+	scrollContent: { paddingHorizontal: 24, paddingTop: 16 },
 
 	// ── Header ──
-	headerRow: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginBottom: 20,
-	},
+	headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
 	avatar: {
 		width: 50,
 		height: 50,
@@ -454,10 +448,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
-	greetingBlock: {
-		flex: 1,
-		marginLeft: 10,
-	},
+	greetingBlock: { flex: 1, marginLeft: 10 },
 	greetingText: {
 		color: "#64748B",
 		fontFamily: FONTS.poppinsMedium,
@@ -472,10 +463,7 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		lineHeight: 24,
 	},
-	headerIcons: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
+	headerIcons: { flexDirection: "row", alignItems: "center" },
 	headerIconBtn: {
 		marginLeft: 12,
 		width: 24,
@@ -503,10 +491,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginBottom: 10,
 	},
-	trackingLabelRow: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
+	trackingLabelRow: { flexDirection: "row", alignItems: "center" },
 	liveDot: {
 		width: 8,
 		height: 8,
@@ -514,7 +499,7 @@ const styles = StyleSheet.create({
 		backgroundColor: COLORS.primary,
 		borderWidth: 1,
 		borderColor: "#FFF",
-		marginRight: 6,
+		marginRight: 8,
 	},
 	trackingLabel: {
 		color: "#374151",
@@ -523,10 +508,7 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		lineHeight: 19.66,
 	},
-	viewAllRow: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
+	viewAllRow: { flexDirection: "row", alignItems: "center" },
 	viewAllText: {
 		color: "#374151",
 		fontFamily: FONTS.poppinsBold,
@@ -535,8 +517,6 @@ const styles = StyleSheet.create({
 		lineHeight: 19.66,
 		marginRight: 2,
 	},
-
-	// ── Map ──
 	mapWrap: {
 		width: "100%",
 		height: 95,
@@ -550,12 +530,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
-
-	// ── Runner ──
-	runnerRow: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
+	runnerRow: { flexDirection: "row", alignItems: "center" },
 	runnerAvatarWrap: { marginRight: 8 },
 	runnerAvatarPlaceholder: {
 		width: 24,
@@ -573,10 +548,7 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		lineHeight: 15.73,
 	},
-	ratingRow: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
+	ratingRow: { flexDirection: "row", alignItems: "center" },
 	ratingText: {
 		color: "#000",
 		fontFamily: FONTS.poppinsMedium,
@@ -585,10 +557,7 @@ const styles = StyleSheet.create({
 		lineHeight: 14.75,
 		marginLeft: 3,
 	},
-	runnerActions: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
+	runnerActions: { flexDirection: "row", alignItems: "center" },
 	runnerActionBtn: {
 		marginLeft: 12,
 		width: 32,
@@ -643,10 +612,10 @@ const styles = StyleSheet.create({
 		position: "absolute",
 		right: -20,
 		top: -20,
-		width: 94,
-		height: 94,
+		width: 80,
+		height: 80,
 		borderRadius: 47,
-		backgroundColor: "rgba(255,255,255,0.15)",
+		backgroundColor: "rgba(12,12,12,0.15)",
 	},
 	cardIconWrap: {
 		width: 39,
@@ -672,9 +641,11 @@ const styles = StyleSheet.create({
 	},
 	comingSoonBadge: {
 		alignSelf: "center",
-		paddingHorizontal: 10,
-		paddingVertical: 4,
-		borderRadius: 11.8,
+		paddingTop: 7.865,
+		paddingBottom: 7.596,
+		paddingLeft: 28.66,
+		paddingRight: 27.98,
+		borderRadius: 11.798,
 	},
 	comingSoonText: {
 		fontFamily: FONTS.poppinsExtraBold,
@@ -733,10 +704,7 @@ const styles = StyleSheet.create({
 		shadowRadius: 6,
 		elevation: 4,
 	},
-	ctaTextBlock: {
-		flex: 1,
-		paddingRight: 24,
-	},
+	ctaTextBlock: { flex: 1, paddingRight: 24 },
 	ctaTitle: {
 		color: "#FFF",
 		fontFamily: FONTS.poppinsExtraBold,
@@ -766,6 +734,21 @@ const styles = StyleSheet.create({
 		elevation: 2,
 	},
 
+	// ── DEV ONLY button — remove before production ──
+	devBtn: {
+		backgroundColor: "#FF384A",
+		padding: 12,
+		borderRadius: 8,
+		marginHorizontal: 16,
+		marginBottom: 16,
+	},
+	devBtnText: {
+		color: "#FFF",
+		textAlign: "center",
+		fontFamily: FONTS.poppinsExtraBold,
+		fontSize: 14,
+	},
+
 	// ── Bottom nav ──
 	navBar: {
 		position: "absolute",
@@ -782,11 +765,7 @@ const styles = StyleSheet.create({
 		borderTopWidth: 1,
 		borderTopColor: "#F3F4F6",
 	},
-	navItem: {
-		alignItems: "center",
-		justifyContent: "center",
-		paddingBottom: 4,
-	},
+	navItem: { alignItems: "center", justifyContent: "center", paddingBottom: 4 },
 	navLabel: {
 		color: "#9CA3AF",
 		fontFamily: FONTS.poppinsMedium,

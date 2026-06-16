@@ -119,6 +119,7 @@ const OTPScreen = ({ navigation, route }) => {
 			<StatusBar style="dark" />
 
 			<View style={styles.screen}>
+				{/* ── Back button ── */}
 				<TouchableOpacity
 					style={styles.backBtn}
 					onPress={() => navigation.goBack()}
@@ -130,13 +131,16 @@ const OTPScreen = ({ navigation, route }) => {
 					/>
 				</TouchableOpacity>
 
+				{/* ── Heading ── */}
 				<Text style={styles.heading}>Verify your email</Text>
 
+				{/* ── Subtext ── */}
 				<Text style={styles.subtext}>
 					{"We've sent a 6-digit verification\ncode to "}
 					<Text style={styles.emailText}>{email}</Text>
 				</Text>
 
+				{/* ── OTP inputs ── */}
 				<View style={styles.otpRow}>
 					{otp.map((digit, i) => (
 						<TextInput
@@ -159,45 +163,55 @@ const OTPScreen = ({ navigation, route }) => {
 					))}
 				</View>
 
-				{hasError ? (
-					<View style={styles.errorBlock}>
-						<Text style={styles.errorText}>
-							{apiError || "The 6-digit passcode you've\nentered is incorrect"}
+				{/* ── Countdown or error — flex:1 so it fills space ── */}
+				<View style={styles.middleSpace}>
+					{hasError ? (
+						<>
+							{/* Error message sits right below OTP boxes */}
+							<Text style={styles.errorText}>
+								{apiError ||
+									"The 6-digit passcode you've\nentered is incorrect"}
+							</Text>
+							{/* Error icon centered */}
+							<View style={styles.errorIconWrap}>
+								<Image
+									source={require("../../assets/images/error-circle.png")}
+									style={{ width: 80, height: 80 }}
+									resizeMode="contain"
+								/>
+							</View>
+						</>
+					) : (
+						// Countdown text sits right below OTP boxes
+						<Text style={styles.countdownText}>
+							{canResend
+								? "You can resend the code now"
+								: `Resend code in ${formatTime(seconds)}`}
 						</Text>
+					)}
+				</View>
 
-						<Image
-							source={require("../../assets/images/error-circle.png")}
-							style={{ width: 80, height: 80 }}
-							resizeMode="contain"
-						/>
+				{/* ── Resend row — pinned above Verify button ── */}
+				<View style={styles.resendRow}>
+					<Text style={styles.resendBaseText}>{"Didn't get a code? "}</Text>
+					<TouchableOpacity
+						onPress={handleResend}
+						disabled={!canResend || resendLoading}>
+						{resendLoading ? (
+							<ActivityIndicator size="small" color={COLORS.primary} />
+						) : (
+							<Text
+								style={[
+									styles.resendLink,
+									!canResend && styles.resendDisabled,
+								]}>
+								Resend
+							</Text>
+						)}
+					</TouchableOpacity>
+				</View>
 
-						<View style={styles.resendRow}>
-							<Text style={styles.resendBaseText}>{"Didn't get a code? "}</Text>
-							<TouchableOpacity
-								onPress={handleResend}
-								disabled={!canResend || resendLoading}>
-								{resendLoading ? (
-									<ActivityIndicator size="small" color={COLORS.primary} />
-								) : (
-									<Text
-										style={[
-											styles.resendLink,
-											!canResend && styles.resendDisabled,
-										]}>
-										Resend
-									</Text>
-								)}
-							</TouchableOpacity>
-						</View>
-					</View>
-				) : (
-					<Text style={styles.countdownText}>
-						{canResend
-							? "You can resend the code now"
-							: `Resend code in ${formatTime(seconds)}`}
-					</Text>
-				)}
-
+				{/* ── Verify button ── */}
 				<View style={styles.btnWrap}>
 					<PrimaryButton
 						label={loading ? "Verifying..." : "Verify"}
@@ -223,18 +237,22 @@ const OTPScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
 	safeArea: {
 		flex: 1,
-		backgroundColor: "#F5F0EB",
+		backgroundColor: "#F8FAF5", 
 	},
 	screen: {
 		flex: 1,
 		paddingHorizontal: 24,
 		paddingTop: 16,
 	},
+
+	// ── Back ──
 	backBtn: {
 		marginBottom: 24,
 		alignSelf: "flex-start",
 		padding: 4,
 	},
+
+	// ── Heading ──
 	heading: {
 		color: "#000",
 		fontFamily: FONTS.poppinsExtraBold,
@@ -242,72 +260,87 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		marginBottom: 12,
 	},
+
+	// ── Subtext ──
 	subtext: {
 		color: COLORS.textMuted,
 		fontFamily: FONTS.poppinsMedium,
-		fontSize: 20,
+		fontSize: 16, 
 		fontWeight: "400",
-		marginBottom: 32,
-		lineHeight: 28,
+		marginBottom: 24,
+		lineHeight: 24,
 	},
 	emailText: {
-		color: COLORS.textMuted,
+		color: "#000", 
 		fontFamily: FONTS.poppinsExtraBold,
-		fontSize: 20,
+		fontSize: 16,
 		fontWeight: "600",
 	},
+
+	// ── OTP row ──
 	otpRow: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
 		width: "100%",
-		marginBottom: 20,
+		marginBottom: 16,
 	},
+
+	// ── OTP box — matches Figma square style ──
 	otpBox: {
-		width: SW / 6 - 12,
-		height: 72,
-		borderRadius: 4,
-		borderWidth: 1.029,
+		width: SW / 6 - 10,
+		height: SW / 6 - 10, 
+		borderRadius: 8,
+		borderWidth: 1.5,
 		borderColor: "#DFE2E8",
 		backgroundColor: COLORS.white,
-		fontSize: 28,
+		fontSize: 24,
 		fontFamily: FONTS.poppinsExtraBold,
 		fontWeight: "600",
 		color: COLORS.textDark,
 		textAlign: "center",
 	},
 	otpBoxFilled: {
-		borderColor: COLORS.primary,
+		borderColor: COLORS.primary, 
 	},
 	otpBoxError: {
-		borderColor: "#FF384A",
+		borderColor: "#FF384A", 
 		color: "#FF384A",
 	},
+
+	// ── Middle space — expands to push resend+btn down ──
+	middleSpace: {
+		flex: 1,
+		paddingTop: 12,
+	},
+
+	// ── Countdown ──
 	countdownText: {
 		color: COLORS.textMuted,
 		fontFamily: FONTS.poppinsMedium,
-		fontSize: 20,
+		fontSize: 16,
 		fontWeight: "400",
-		marginBottom: 32,
 	},
-	errorBlock: {
-		alignItems: "center",
-		marginBottom: 24,
-	},
+
+	// ── Error ──
 	errorText: {
 		color: "#FF384A",
 		fontFamily: FONTS.poppinsMedium,
-		fontSize: 20,
+		fontSize: 16,
 		fontWeight: "400",
-		lineHeight: 28,
-		marginBottom: 24,
-		alignSelf: "flex-start",
+		lineHeight: 24,
+		marginBottom: 20,
 	},
+	errorIconWrap: {
+		alignItems: "center", 
+		marginTop: 20,
+	},
+
+	// ── Resend row — sits just above Verify button ──
 	resendRow: {
 		flexDirection: "row",
 		alignItems: "center",
-		alignSelf: "flex-start",
-		marginTop: 20,
+		marginBottom: 16,
 	},
 	resendBaseText: {
 		color: COLORS.textMuted,
@@ -326,8 +359,9 @@ const styles = StyleSheet.create({
 	resendDisabled: {
 		color: "#B0B3B8",
 	},
+
+	// ── Verify button ──
 	btnWrap: {
-		marginTop: "auto",
 		paddingBottom: 8,
 	},
 });
