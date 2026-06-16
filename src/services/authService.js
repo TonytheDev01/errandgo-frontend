@@ -82,7 +82,7 @@ export const logout = async () => {
 };
 
 export const googleLogin = async ({ access_token }) => {
-	return await request("/auth/google", "POST", { access_token });
+	return await request("/google-auth", "POST", { access_token });
 };
 
 export const isAuthenticated = async () => {
