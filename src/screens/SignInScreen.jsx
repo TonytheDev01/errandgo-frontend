@@ -22,7 +22,6 @@ import { useAuth } from "../context/AuthContext";
 import useGoogleAuth from "../hooks/useGoogleAuth";
 
 const SignInScreen = ({ navigation }) => {
-	// ✅ Fix 1 — single signIn declaration (was duplicated, caused crash)
 	const { signIn } = useAuth();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -50,7 +49,7 @@ const SignInScreen = ({ navigation }) => {
 		setLoading(false);
 
 		if (result.ok) {
-			await signIn(result.data.token, { email: email.trim().toLowerCase() });
+			await signIn(result.data.token, result.data.user);
 		} else {
 			setError(result.data.error || "Login failed. Please try again.");
 		}
@@ -59,7 +58,6 @@ const SignInScreen = ({ navigation }) => {
 	const { handleGoogleSignIn, googleAuthReady } = useGoogleAuth({
 		onLoading: (val) => setLoading(val),
 		onSuccess: async (token, user) => {
-			// Once backend is ready this saves token and redirects to Dashboard
 			await signIn(token, user);
 		},
 		onError: (msg) => setError(msg),
@@ -144,18 +142,14 @@ const SignInScreen = ({ navigation }) => {
 						</View>
 					</View>
 
-					{/* ── Forgot Password ── */}
 					<TouchableOpacity
 						style={styles.forgotWrap}
-						// ✅ Fix 2 — replace console.log with navigation when screen exists
 						onPress={() => navigation.navigate("ForgotPassword")}>
 						<Text style={styles.forgotText}>Forgot password?</Text>
 					</TouchableOpacity>
 
-					{/* ── Error message ── */}
 					{error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-					{/* ── Login Button ── */}
 					<View style={styles.btnWrap}>
 						<PrimaryButton
 							label={loading ? "Logging in..." : "Login"}
@@ -172,14 +166,12 @@ const SignInScreen = ({ navigation }) => {
 						)}
 					</View>
 
-					{/* ── Divider ── */}
 					<View style={styles.dividerRow}>
 						<View style={styles.dividerLine} />
 						<Text style={styles.dividerText}>or</Text>
 						<View style={styles.dividerLine} />
 					</View>
 
-					{/* ── Continue with Google ── */}
 					<TouchableOpacity
 						style={[styles.googleBtn, !googleAuthReady && { opacity: 0.6 }]}
 						onPress={handleGoogleSignIn}
@@ -193,7 +185,6 @@ const SignInScreen = ({ navigation }) => {
 						<Text style={styles.googleText}>Continue with Google</Text>
 					</TouchableOpacity>
 
-					{/* ── Sign up link ── */}
 					<View style={styles.signupRow}>
 						<Text style={styles.signupText}>Don't have an account? </Text>
 						<TouchableOpacity
@@ -204,28 +195,16 @@ const SignInScreen = ({ navigation }) => {
 					</View>
 				</ScrollView>
 			</KeyboardAvoidingView>
-
 			<HomeIndicator color={COLORS.primary} />
 		</SafeAreaView>
 	);
 };
 
 const styles = StyleSheet.create({
-	safeArea: {
-		flex: 1,
-		backgroundColor: "#F8FAF5",
-	},
+	safeArea: { flex: 1, backgroundColor: "#F8FAF5" },
 	flex: { flex: 1 },
-	scrollContent: {
-		paddingHorizontal: 24,
-		paddingTop: 24,
-		paddingBottom: 16,
-	},
-	logoRow: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginBottom: 32,
-	},
+	scrollContent: { paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16 },
+	logoRow: { flexDirection: "row", alignItems: "center", marginBottom: 32 },
 	iconBg: {
 		width: 50,
 		height: 50,
@@ -286,10 +265,7 @@ const styles = StyleSheet.create({
 	},
 	eyeBtn: { padding: 4 },
 	eyeIcon: { width: 18, height: 18 },
-	forgotWrap: {
-		alignSelf: "flex-end",
-		marginBottom: 24,
-	},
+	forgotWrap: { alignSelf: "flex-end", marginBottom: 24 },
 	forgotText: {
 		color: COLORS.primary,
 		fontFamily: FONTS.poppinsMedium,

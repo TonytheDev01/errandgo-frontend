@@ -8,32 +8,14 @@ import {
 	removeUser,
 } from "../services/authService";
 
-// ── DEV BYPASS ────────────────────────────────────────────
-// Must match DEV_BYPASS in AppNavigator.js.
-// SET TO false BEFORE ANY PRODUCTION COMMIT.
-const DEV_BYPASS = false;
-
-const DEV_MOCK_USER = {
-	name: "Tunde",
-	full_name: "Tunde Adeyemi",
-	email: "tunde@errandgo.com",
-	avatar: null,
-};
-
-const DEV_MOCK_TOKEN = "dev_mock_token_not_for_production";
-// ─────────────────────────────────────────────────────────
-
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-	const [token, setToken] = useState(DEV_BYPASS ? DEV_MOCK_TOKEN : null);
-	const [user, setUser] = useState(DEV_BYPASS ? DEV_MOCK_USER : null);
-	const [loading, setLoading] = useState(!DEV_BYPASS);
+	const [token, setToken] = useState(null);
+	const [user, setUser] = useState(null);
+	const [loading, setLoading] = useState(true);
 
-	// ── Restore session from AsyncStorage (skipped in DEV_BYPASS) ──
 	useEffect(() => {
-		if (DEV_BYPASS) return;
-
 		const restoreSession = async () => {
 			try {
 				const [storedToken, storedUser] = await Promise.all([
@@ -45,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 					setUser(storedUser);
 				}
 			} catch (error) {
-				console.error("Session restore failed:", error);
+				// Session restore failed — user will be sent through auth flow
 			} finally {
 				setLoading(false);
 			}
@@ -54,7 +36,6 @@ export const AuthProvider = ({ children }) => {
 		restoreSession();
 	}, []);
 
-	// ── Sign in ──
 	const signIn = async (newToken, userData = null) => {
 		await saveToken(newToken);
 		if (userData) await saveUser(userData);
@@ -62,7 +43,6 @@ export const AuthProvider = ({ children }) => {
 		setUser(userData);
 	};
 
-	// ── Sign out ──
 	const signOut = async () => {
 		await removeToken();
 		await removeUser();

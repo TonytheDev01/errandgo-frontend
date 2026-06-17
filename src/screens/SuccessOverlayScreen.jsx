@@ -6,15 +6,11 @@ import HomeIndicator from "../components/HomeIndicator";
 import PrimaryButton from "../components/PrimaryButton";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/typography";
-import { useAuth } from "../context/AuthContext"; 
 
-const SuccessOverlayScreen = ({ navigation, route }) => {
-	const { signIn } = useAuth(); // 
-	const { token, user } = route?.params || {}; 
-
-	const handleGetStarted = async () => {
-		await signIn(token, user);
-		navigation.replace("Dashboard");
+const SuccessOverlayScreen = ({ navigation }) => {
+	const handleGetStarted = () => {
+		// User verified — send them to SignIn to login with their credentials
+		navigation.replace("SignIn");
 	};
 
 	return (
@@ -30,7 +26,6 @@ const SuccessOverlayScreen = ({ navigation, route }) => {
 						/>
 					</View>
 
-					{/* ── Heading ── */}
 					<Text style={styles.heading}>Account Verified!</Text>
 					<Text style={styles.subtext}>
 						Welcome to ErrandGo. Let's get things done for you.
@@ -52,10 +47,7 @@ const SuccessOverlayScreen = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
-	safeArea: {
-		flex: 1,
-		backgroundColor: COLORS.white,
-	},
+	safeArea: { flex: 1, backgroundColor: COLORS.white },
 	screen: {
 		flex: 1,
 		backgroundColor: COLORS.white,
@@ -63,10 +55,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		paddingHorizontal: 24,
 	},
-	body: {
-		alignItems: "center",
-		width: "100%",
-	},
+	body: { alignItems: "center", width: "100%" },
 	checkCircle: {
 		width: 100,
 		height: 100,
@@ -78,10 +67,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		marginBottom: 32,
 	},
-	checkIcon: {
-		width: 52,
-		height: 52,
-	},
+	checkIcon: { width: 52, height: 52 },
 	heading: {
 		width: 304,
 		color: "#000",
@@ -102,9 +88,7 @@ const styles = StyleSheet.create({
 		lineHeight: 28,
 		marginBottom: 48,
 	},
-	btnWrap: {
-		width: "100%",
-	},
+	btnWrap: { width: "100%" },
 });
 
 export default SuccessOverlayScreen;

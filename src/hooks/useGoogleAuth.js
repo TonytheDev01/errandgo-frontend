@@ -9,14 +9,6 @@ WebBrowser.maybeCompleteAuthSession();
 const useGoogleAuth = ({ onSuccess, onError, onLoading }) => {
 	const [isAuthInProgress, setIsAuthInProgress] = useState(false);
 
-	// ── Guards ──
-	if (!ANDROID_CLIENT_ID || ANDROID_CLIENT_ID === "PENDING_FROM_BACKEND") {
-		console.warn("[useGoogleAuth] Android Client ID not set.");
-	}
-	if (!IOS_CLIENT_ID || IOS_CLIENT_ID === "PENDING_FROM_BACKEND") {
-		console.warn("[useGoogleAuth] iOS Client ID not set.");
-	}
-
 	const [request, response, promptAsync] = Google.useAuthRequest({
 		clientId: GOOGLE_CLIENT_ID,
 		androidClientId: ANDROID_CLIENT_ID,
@@ -65,11 +57,7 @@ const useGoogleAuth = ({ onSuccess, onError, onLoading }) => {
 			setIsAuthInProgress(true);
 			promptAsync();
 		},
-		googleAuthReady:
-			!!request &&
-			!isAuthInProgress &&
-			((!!ANDROID_CLIENT_ID && ANDROID_CLIENT_ID !== "PENDING_FROM_BACKEND") ||
-				(!!IOS_CLIENT_ID && IOS_CLIENT_ID !== "PENDING_FROM_BACKEND")),
+		googleAuthReady: !!request && !isAuthInProgress,
 	};
 };
 

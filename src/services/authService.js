@@ -15,8 +15,7 @@ const request = async (
 	if (token) headers["Authorization"] = `Bearer ${token}`;
 	const config = { method, headers };
 	if (body) config.body = JSON.stringify(body);
-	console.log("REQUEST URL:", `${BASE_URL}${endpoint}`);
-	console.log("REQUEST BODY:", JSON.stringify(body));
+
 	try {
 		const response = await fetch(`${BASE_URL}${endpoint}`, config);
 		const data = await response.json();
@@ -44,8 +43,7 @@ export const getUser = async () => {
 };
 export const removeUser = () => AsyncStorage.removeItem(USER_KEY);
 
-// ── AUTH ENDPOINTS
-// ✅ Single correct register — matches backend database schema
+// ── Auth endpoints
 export const register = async ({
 	email,
 	password,

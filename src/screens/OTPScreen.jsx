@@ -47,7 +47,6 @@ const OTPScreen = ({ navigation, route }) => {
 		return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
 	};
 
-	// ── Handle digit input ──
 	const handleChange = (text, index) => {
 		const digit = text.replace(/[^0-9]/g, "").slice(-1);
 		const newOtp = [...otp];
@@ -60,7 +59,6 @@ const OTPScreen = ({ navigation, route }) => {
 		}
 	};
 
-	// ── Handle backspace ──
 	const handleKeyPress = (e, index) => {
 		if (e.nativeEvent.key === "Backspace" && !otp[index] && index > 0) {
 			inputRefs.current[index - 1]?.focus();
@@ -82,10 +80,9 @@ const OTPScreen = ({ navigation, route }) => {
 		setLoading(false);
 
 		if (result.ok) {
-			navigation.replace("SuccessOverlay", {
-				token: result.data.token,
-				user: { email },
-			});
+			// Verification successful — navigate to SuccessOverlay.
+			// Do NOT pass token or user here. User must login manually after this.
+			navigation.replace("SuccessOverlay");
 		} else {
 			setHasError(true);
 			setApiError(result.data.error || "Invalid code. Please try again.");
@@ -116,9 +113,7 @@ const OTPScreen = ({ navigation, route }) => {
 	return (
 		<SafeAreaView style={styles.safeArea} edges={["top"]}>
 			<StatusBar style="dark" />
-
 			<View style={styles.screen}>
-				{/* ── Back button ── */}
 				<TouchableOpacity
 					style={styles.backBtn}
 					onPress={() => navigation.goBack()}
@@ -130,15 +125,12 @@ const OTPScreen = ({ navigation, route }) => {
 					/>
 				</TouchableOpacity>
 
-				{/* ── Heading ── */}
 				<Text style={styles.heading}>Verify your email</Text>
-
 				<Text style={styles.subtext}>
 					{"We've sent a 6-digit verification\ncode to "}
 					<Text style={styles.emailText}>{email}</Text>
 				</Text>
 
-				{/* ── OTP inputs ── */}
 				<View style={styles.otpRow}>
 					{otp.map((digit, i) => (
 						<TextInput
@@ -161,7 +153,6 @@ const OTPScreen = ({ navigation, route }) => {
 					))}
 				</View>
 
-				{/* ── Countdown or error ── */}
 				<View style={styles.middleSpace}>
 					{hasError ? (
 						<>
@@ -186,7 +177,6 @@ const OTPScreen = ({ navigation, route }) => {
 					)}
 				</View>
 
-				{/* ── Resend row ── */}
 				<View style={styles.resendRow}>
 					<Text style={styles.resendBaseText}>{"Didn't get a code? "}</Text>
 					<TouchableOpacity
@@ -206,7 +196,6 @@ const OTPScreen = ({ navigation, route }) => {
 					</TouchableOpacity>
 				</View>
 
-				{/* ── Verify button ── */}
 				<View style={styles.btnWrap}>
 					<PrimaryButton
 						label={loading ? "Verifying..." : "Verify"}
@@ -223,27 +212,15 @@ const OTPScreen = ({ navigation, route }) => {
 					)}
 				</View>
 			</View>
-
 			<HomeIndicator color={COLORS.primary} />
 		</SafeAreaView>
 	);
 };
 
 const styles = StyleSheet.create({
-	safeArea: {
-		flex: 1,
-		backgroundColor: "#F8FAF5",
-	},
-	screen: {
-		flex: 1,
-		paddingHorizontal: 24,
-		paddingTop: 16,
-	},
-	backBtn: {
-		marginBottom: 24,
-		alignSelf: "flex-start",
-		padding: 4,
-	},
+	safeArea: { flex: 1, backgroundColor: "#F8FAF5" },
+	screen: { flex: 1, paddingHorizontal: 24, paddingTop: 16 },
+	backBtn: { marginBottom: 24, alignSelf: "flex-start", padding: 4 },
 	heading: {
 		color: "#000",
 		fontFamily: FONTS.poppinsExtraBold,
@@ -285,17 +262,9 @@ const styles = StyleSheet.create({
 		color: COLORS.textDark,
 		textAlign: "center",
 	},
-	otpBoxFilled: {
-		borderColor: COLORS.primary,
-	},
-	otpBoxError: {
-		borderColor: "#FF384A",
-		color: "#FF384A",
-	},
-	middleSpace: {
-		flex: 1,
-		paddingTop: 12,
-	},
+	otpBoxFilled: { borderColor: COLORS.primary },
+	otpBoxError: { borderColor: "#FF384A", color: "#FF384A" },
+	middleSpace: { flex: 1, paddingTop: 12 },
 	countdownText: {
 		color: COLORS.textMuted,
 		fontFamily: FONTS.poppinsMedium,
@@ -310,10 +279,7 @@ const styles = StyleSheet.create({
 		lineHeight: 24,
 		marginBottom: 20,
 	},
-	errorIconWrap: {
-		alignItems: "center",
-		marginTop: 20,
-	},
+	errorIconWrap: { alignItems: "center", marginTop: 20 },
 	resendRow: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -333,12 +299,8 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		lineHeight: 24,
 	},
-	resendDisabled: {
-		color: "#B0B3B8",
-	},
-	btnWrap: {
-		paddingBottom: 8,
-	},
+	resendDisabled: { color: "#B0B3B8" },
+	btnWrap: { paddingBottom: 8 },
 });
 
 export default OTPScreen;
