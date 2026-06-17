@@ -32,6 +32,7 @@ const OTPScreen = ({ navigation, route }) => {
 	const [resendLoading, setResendLoading] = useState(false);
 	const inputRefs = useRef([]);
 
+	// ── Countdown timer ──
 	useEffect(() => {
 		if (seconds === 0) {
 			setCanResend(true);
@@ -80,8 +81,6 @@ const OTPScreen = ({ navigation, route }) => {
 		setLoading(false);
 
 		if (result.ok) {
-			// Verification successful — navigate to SuccessOverlay.
-			// Do NOT pass token or user here. User must login manually after this.
 			navigation.replace("SuccessOverlay");
 		} else {
 			setHasError(true);
