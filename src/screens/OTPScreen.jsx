@@ -16,14 +16,12 @@ import PrimaryButton from "../components/PrimaryButton";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/typography";
 import * as authService from "../services/authService";
-import { useAuth } from "../context/AuthContext";
 
 const { width: SW } = Dimensions.get("window");
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 30;
 
 const OTPScreen = ({ navigation, route }) => {
-	const { signIn } = useAuth();
 	const email = route?.params?.email || "";
 	const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
 	const [hasError, setHasError] = useState(false);
@@ -34,7 +32,6 @@ const OTPScreen = ({ navigation, route }) => {
 	const [resendLoading, setResendLoading] = useState(false);
 	const inputRefs = useRef([]);
 
-	// ── Countdown timer ──
 	useEffect(() => {
 		if (seconds === 0) {
 			setCanResend(true);
@@ -85,8 +82,10 @@ const OTPScreen = ({ navigation, route }) => {
 		setLoading(false);
 
 		if (result.ok) {
-			await signIn(result.data.token, { email });
-			navigation.replace("SuccessOverlay");
+			navigation.replace("SuccessOverlay", {
+				token: result.data.token,
+				user: { email },
+			});
 		} else {
 			setHasError(true);
 			setApiError(result.data.error || "Invalid code. Please try again.");
@@ -134,7 +133,6 @@ const OTPScreen = ({ navigation, route }) => {
 				{/* ── Heading ── */}
 				<Text style={styles.heading}>Verify your email</Text>
 
-				{/* ── Subtext ── */}
 				<Text style={styles.subtext}>
 					{"We've sent a 6-digit verification\ncode to "}
 					<Text style={styles.emailText}>{email}</Text>
@@ -163,16 +161,14 @@ const OTPScreen = ({ navigation, route }) => {
 					))}
 				</View>
 
-				{/* ── Countdown or error — flex:1 so it fills space ── */}
+				{/* ── Countdown or error ── */}
 				<View style={styles.middleSpace}>
 					{hasError ? (
 						<>
-							{/* Error message sits right below OTP boxes */}
 							<Text style={styles.errorText}>
 								{apiError ||
 									"The 6-digit passcode you've\nentered is incorrect"}
 							</Text>
-							{/* Error icon centered */}
 							<View style={styles.errorIconWrap}>
 								<Image
 									source={require("../../assets/images/error-circle.png")}
@@ -182,7 +178,6 @@ const OTPScreen = ({ navigation, route }) => {
 							</View>
 						</>
 					) : (
-						// Countdown text sits right below OTP boxes
 						<Text style={styles.countdownText}>
 							{canResend
 								? "You can resend the code now"
@@ -191,7 +186,7 @@ const OTPScreen = ({ navigation, route }) => {
 					)}
 				</View>
 
-				{/* ── Resend row — pinned above Verify button ── */}
+				{/* ── Resend row ── */}
 				<View style={styles.resendRow}>
 					<Text style={styles.resendBaseText}>{"Didn't get a code? "}</Text>
 					<TouchableOpacity
@@ -237,22 +232,18 @@ const OTPScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
 	safeArea: {
 		flex: 1,
-		backgroundColor: "#F8FAF5", 
+		backgroundColor: "#F8FAF5",
 	},
 	screen: {
 		flex: 1,
 		paddingHorizontal: 24,
 		paddingTop: 16,
 	},
-
-	// ── Back ──
 	backBtn: {
 		marginBottom: 24,
 		alignSelf: "flex-start",
 		padding: 4,
 	},
-
-	// ── Heading ──
 	heading: {
 		color: "#000",
 		fontFamily: FONTS.poppinsExtraBold,
@@ -260,24 +251,20 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		marginBottom: 12,
 	},
-
-	// ── Subtext ──
 	subtext: {
 		color: COLORS.textMuted,
 		fontFamily: FONTS.poppinsMedium,
-		fontSize: 16, 
+		fontSize: 16,
 		fontWeight: "400",
 		marginBottom: 24,
 		lineHeight: 24,
 	},
 	emailText: {
-		color: "#000", 
+		color: "#000",
 		fontFamily: FONTS.poppinsExtraBold,
 		fontSize: 16,
 		fontWeight: "600",
 	},
-
-	// ── OTP row ──
 	otpRow: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -285,11 +272,9 @@ const styles = StyleSheet.create({
 		width: "100%",
 		marginBottom: 16,
 	},
-
-	// ── OTP box — matches Figma square style ──
 	otpBox: {
 		width: SW / 6 - 10,
-		height: SW / 6 - 10, 
+		height: SW / 6 - 10,
 		borderRadius: 8,
 		borderWidth: 1.5,
 		borderColor: "#DFE2E8",
@@ -301,28 +286,22 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 	},
 	otpBoxFilled: {
-		borderColor: COLORS.primary, 
+		borderColor: COLORS.primary,
 	},
 	otpBoxError: {
-		borderColor: "#FF384A", 
+		borderColor: "#FF384A",
 		color: "#FF384A",
 	},
-
-	// ── Middle space — expands to push resend+btn down ──
 	middleSpace: {
 		flex: 1,
 		paddingTop: 12,
 	},
-
-	// ── Countdown ──
 	countdownText: {
 		color: COLORS.textMuted,
 		fontFamily: FONTS.poppinsMedium,
 		fontSize: 16,
 		fontWeight: "400",
 	},
-
-	// ── Error ──
 	errorText: {
 		color: "#FF384A",
 		fontFamily: FONTS.poppinsMedium,
@@ -332,11 +311,9 @@ const styles = StyleSheet.create({
 		marginBottom: 20,
 	},
 	errorIconWrap: {
-		alignItems: "center", 
+		alignItems: "center",
 		marginTop: 20,
 	},
-
-	// ── Resend row — sits just above Verify button ──
 	resendRow: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -359,8 +336,6 @@ const styles = StyleSheet.create({
 	resendDisabled: {
 		color: "#B0B3B8",
 	},
-
-	// ── Verify button ──
 	btnWrap: {
 		paddingBottom: 8,
 	},

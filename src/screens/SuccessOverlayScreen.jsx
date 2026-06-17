@@ -6,16 +6,20 @@ import HomeIndicator from "../components/HomeIndicator";
 import PrimaryButton from "../components/PrimaryButton";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/typography";
+import { useAuth } from "../context/AuthContext"; 
 
-const SuccessOverlayScreen = ({ navigation }) => {
-	const handleGetStarted = () => {
+const SuccessOverlayScreen = ({ navigation, route }) => {
+	const { signIn } = useAuth(); // 
+	const { token, user } = route?.params || {}; 
+
+	const handleGetStarted = async () => {
+		await signIn(token, user);
 		navigation.replace("Dashboard");
 	};
 
 	return (
 		<SafeAreaView style={styles.safeArea} edges={["top"]}>
 			<StatusBar style="dark" />
-
 			<View style={styles.screen}>
 				<View style={styles.body}>
 					<View style={styles.checkCircle}>
@@ -28,7 +32,6 @@ const SuccessOverlayScreen = ({ navigation }) => {
 
 					{/* ── Heading ── */}
 					<Text style={styles.heading}>Account Verified!</Text>
-
 					<Text style={styles.subtext}>
 						Welcome to ErrandGo. Let's get things done for you.
 					</Text>
@@ -43,7 +46,6 @@ const SuccessOverlayScreen = ({ navigation }) => {
 					</View>
 				</View>
 			</View>
-
 			<HomeIndicator color={COLORS.primary} />
 		</SafeAreaView>
 	);
