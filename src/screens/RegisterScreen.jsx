@@ -36,7 +36,7 @@ const RegisterScreen = ({ navigation }) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [mobile, setMobile] = useState("");
 	const [country, setCountry] = useState("");
-	const [dialCode, setDialCode] = useState("+234"); // ✅ dynamic dial code
+	const [dialCode, setDialCode] = useState("+234"); 
 	const [city, setCity] = useState("");
 	const [gender, setGender] = useState("");
 	const [showCountry, setShowCountry] = useState(false);
@@ -108,7 +108,7 @@ const RegisterScreen = ({ navigation }) => {
 			return;
 		}
 
-		setLoading(true); // ✅ Fix — removed duplicate setLoading(false)
+		setLoading(true); // 
 		const result = await authService.register({
 			email: email.trim().toLowerCase(),
 			password,
