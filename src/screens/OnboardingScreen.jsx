@@ -76,7 +76,7 @@ const OnboardingScreen = ({ navigation }) => {
 
 	const handleNext = useCallback(() => {
 		if (!isLast) setIndex((i) => i + 1);
-		else navigation.replace("SignIn");
+		else navigation.replace("SignUp");
 	}, [isLast, navigation]);
 
 	// Goes back one slide — if on slide 1, goes back to Splash
@@ -86,7 +86,7 @@ const OnboardingScreen = ({ navigation }) => {
 	}, [isFirst, navigation]);
 
 	const handleSkip = useCallback(() => {
-		navigation.replace("SignIn");
+		navigation.replace("SignUp"); 
 	}, [navigation]);
 
 	return (
