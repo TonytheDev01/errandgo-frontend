@@ -28,8 +28,10 @@ const AppNavigator = () => {
 	return (
 		<Stack.Navigator screenOptions={{ headerShown: false, animation: "fade" }}>
 			{token ? (
+				// ── Authenticated stack ──
 				<Stack.Screen name="Dashboard" component={DashboardScreen} />
 			) : (
+				// ── Unauthenticated stack ──
 				<>
 					<Stack.Screen name="Splash" component={SplashScreen} />
 					<Stack.Screen name="Onboarding" component={OnboardingScreen} />
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
-		backgroundColor: COLORS.background,
+		backgroundColor: "#F5F0EB", 
 	},
 });
 
