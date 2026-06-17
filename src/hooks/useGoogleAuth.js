@@ -1,9 +1,28 @@
 import { useEffect, useState } from "react";
+import * as Google from "expo-auth-session/providers/google";
+import * as WebBrowser from "expo-web-browser";
+import * as authService from "../services/authService";
+import { GOOGLE_CLIENT_ID, ANDROID_CLIENT_ID, IOS_CLIENT_ID } from "@env";
+
+WebBrowser.maybeCompleteAuthSession();
 
 const useGoogleAuth = ({ onSuccess, onError, onLoading }) => {
 	const [isAuthInProgress, setIsAuthInProgress] = useState(false);
 
-	// ... guards and useAuthRequest stay the same ...
+	// ── Guards ──
+	if (!ANDROID_CLIENT_ID || ANDROID_CLIENT_ID === "PENDING_FROM_BACKEND") {
+		console.warn("[useGoogleAuth] Android Client ID not set.");
+	}
+	if (!IOS_CLIENT_ID || IOS_CLIENT_ID === "PENDING_FROM_BACKEND") {
+		console.warn("[useGoogleAuth] iOS Client ID not set.");
+	}
+
+	const [request, response, promptAsync] = Google.useAuthRequest({
+		clientId: GOOGLE_CLIENT_ID,
+		androidClientId: ANDROID_CLIENT_ID,
+		iosClientId: IOS_CLIENT_ID,
+		scopes: ["profile", "email"],
+	});
 
 	useEffect(() => {
 		if (!response) return;
@@ -53,3 +72,5 @@ const useGoogleAuth = ({ onSuccess, onError, onLoading }) => {
 				(!!IOS_CLIENT_ID && IOS_CLIENT_ID !== "PENDING_FROM_BACKEND")),
 	};
 };
+
+export default useGoogleAuth;
