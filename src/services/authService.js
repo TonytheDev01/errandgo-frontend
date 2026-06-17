@@ -16,9 +16,13 @@ const request = async (
 	const config = { method, headers };
 	if (body) config.body = JSON.stringify(body);
 
+	console.log("REQUEST URL:", `${BASE_URL}${endpoint}`);
+	console.log("REQUEST BODY:", JSON.stringify(body));
+
 	try {
 		const response = await fetch(`${BASE_URL}${endpoint}`, config);
 		const data = await response.json();
+		console.log("RESPONSE:", JSON.stringify(data)); //  helps debug user data
 		return { ok: response.ok, status: response.status, data };
 	} catch (error) {
 		return {
@@ -29,12 +33,12 @@ const request = async (
 	}
 };
 
-// ── Token storage
+// ── Token storage ──
 export const saveToken = (token) => AsyncStorage.setItem(TOKEN_KEY, token);
 export const getToken = () => AsyncStorage.getItem(TOKEN_KEY);
 export const removeToken = () => AsyncStorage.removeItem(TOKEN_KEY);
 
-// ── User storage
+// ── User storage ──
 export const saveUser = (user) =>
 	AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
 export const getUser = async () => {
@@ -43,7 +47,7 @@ export const getUser = async () => {
 };
 export const removeUser = () => AsyncStorage.removeItem(USER_KEY);
 
-// ── Auth endpoints
+// ── Auth endpoints ──
 export const register = async ({
 	email,
 	password,
