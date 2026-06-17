@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
 
+	// ── Restore session from AsyncStorage on app launch ──
 	useEffect(() => {
 		const restoreSession = async () => {
 			try {
@@ -27,15 +28,15 @@ export const AuthProvider = ({ children }) => {
 					setUser(storedUser);
 				}
 			} catch (error) {
-				// Session restore failed — user will be sent through auth flow
+				console.error("Session restore failed:", error);
 			} finally {
 				setLoading(false);
 			}
 		};
-
 		restoreSession();
 	}, []);
 
+	// ── Sign in — saves token and full user object ──
 	const signIn = async (newToken, userData = null) => {
 		await saveToken(newToken);
 		if (userData) await saveUser(userData);
@@ -43,6 +44,7 @@ export const AuthProvider = ({ children }) => {
 		setUser(userData);
 	};
 
+	// ── Sign out ──
 	const signOut = async () => {
 		await removeToken();
 		await removeUser();
