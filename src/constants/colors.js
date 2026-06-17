@@ -1,30 +1,46 @@
+
 export const COLORS = {
-	// ── Backgrounds 
-	PRIMARY_GREEN: "#052E16", // splash bg, deep brand green
-	ACCENT_GREEN: "#166534", // hover states, secondary green
-	splashBg: "#052E16", // alias for component use
-	BUTTON_GREEN: "#16A34A", // primary green CTA
-	primary: "#16A34A", // alias for component use
-	cta: "#F97300", // orange CTA (Let's Go, slide 2 & 4)
-	primaryLight: "#BBF7D0", // inactive green dots
-	ctaLight: "#FED7AA", // inactive orange dots
-	TEXT_PRIMARY: "#111827", // headings, body
-	TEXT_SECONDARY: "#374151", // subtext
-	textDark: "#000000", // onboarding heading line 1
-	textMuted: "#656669", // onboarding description, skip btn
-	textLight: "#DCFCE7", // splash tagline (on dark bg)
 
-	// ── UI Foundations 
-	BORDER: "#E5E7EB", // input borders, dividers
-	SURFACE_WHITE: "#FFFFFF", // card/screen backgrounds
-	white: "#FFFFFF", // alias for component use
-	homeIndicator: "#F5F5F5", 
+    // ── Brand ─────────────────────────────────────────────
+    primary: "#16A34A",          // primary green CTA, active states
+    primaryDark: "#052E16",      // splash bg, deep brand green
+    primaryMid: "#166534",       // hover states, secondary green
+    primaryLight: "#BBF7D0",     // inactive green dots, subtle bg
+    cta: "#F97316",              // orange CTA (Let's Go, slide 2 & 4)
+    ctaLight: "#FED7AA",         // inactive orange dots, subtle bg
 
-	// ── Overlays & States 
-	OVERLAY_BG: "rgba(0,0,0,0.6)", 
+    // ── Backgrounds 
+    splashBg: "#052E16",         // splash screen background
+    white: "#FFFFFF",            // card/screen backgrounds
+    surface: "#FFFFFF",          // alias — use for card surfaces
 
-	// ── Errors 
-	ERROR_RED: "#B91C1C", // error text
-	LIGHT_RED: "#FEE2E2", // error input background
-	error: "#DC2626", // inline error (OTP wrong code etc.)
+    // ── Text 
+    textDark: "#000000",         // primary headings
+    textPrimary: "#111827",      // body text, subheadings
+    textSecondary: "#374151",    // secondary body text
+    textMuted: "#656669",        // descriptions, placeholders, skip btn
+    textLight: "#DCFCE7",        // text on dark backgrounds (splash tagline)
+
+    // ── UI Foundations 
+    border: "#E5E7EB",           // input borders, dividers, card outlines
+    homeIndicator: "#F5F5F5",    // home indicator bar color
+
+    // ── Overlays 
+    overlayBg: "rgba(0,0,0,0.6)", // modal backdrops, overlays
+
+    // ── Errors 
+    error: "#DC2626",            // inline errors (OTP, form validation)
+    errorDark: "#B91C1C",        // error headings, strong error states
+    errorLight: "#FEE2E2",       // error input backgrounds
+
+    PRIMARY_GREEN: "#052E16",    // → use primaryDark
+    ACCENT_GREEN: "#166534",     // → use primaryMid
+    BUTTON_GREEN: "#16A34A",     // → use primary
+    TEXT_PRIMARY: "#111827",     // → use textPrimary
+    TEXT_SECONDARY: "#374151",   // → use textSecondary
+    BORDER: "#E5E7EB",           // → use border
+    SURFACE_WHITE: "#FFFFFF",    // → use surface
+    OVERLAY_BG: "rgba(0,0,0,0.6)", // → use overlayBg
+    ERROR_RED: "#B91C1C",        // → use errorDark
+    LIGHT_RED: "#FEE2E2",        // → use errorLight
 };
