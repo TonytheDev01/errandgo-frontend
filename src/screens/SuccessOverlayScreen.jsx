@@ -9,7 +9,6 @@ import { FONTS } from "../constants/typography";
 
 const SuccessOverlayScreen = ({ navigation }) => {
 	const handleGetStarted = () => {
-		// User verified — send them to SignIn to login with their credentials
 		navigation.replace("SignIn");
 	};
 
@@ -25,12 +24,10 @@ const SuccessOverlayScreen = ({ navigation }) => {
 							resizeMode="contain"
 						/>
 					</View>
-
 					<Text style={styles.heading}>Account Verified!</Text>
 					<Text style={styles.subtext}>
 						Welcome to ErrandGo. Let's get things done for you.
 					</Text>
-
 					<View style={styles.btnWrap}>
 						<PrimaryButton
 							label="Get Started"
