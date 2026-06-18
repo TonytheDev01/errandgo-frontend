@@ -1,3 +1,4 @@
+// babel.config.js
 module.exports = function (api) {
 	api.cache(true);
 	return {
@@ -24,10 +25,9 @@ module.exports = function (api) {
 					moduleName: "@env",
 					path: ".env",
 					safe: false,
-					allowUndefined: false,
+					allowUndefined: true, 
 				},
 			],
-			"react-native-reanimated/plugin", 
 		],
 	};
 };

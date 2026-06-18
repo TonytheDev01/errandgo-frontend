@@ -1,7 +1,8 @@
+// src/services/authService.js
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_BASE_URL } from "@env";
+import CONFIG from "@constants/config"; 
 
-const BASE_URL = API_BASE_URL || "https://errand-go-backend.onrender.com/api";
+const BASE_URL = CONFIG.API_BASE_URL;
 const TOKEN_KEY = "errandgo_token";
 const USER_KEY = "errandgo_user";
 
@@ -16,15 +17,25 @@ const request = async (
 	const config = { method, headers };
 	if (body) config.body = JSON.stringify(body);
 
-	console.log("REQUEST URL:", `${BASE_URL}${endpoint}`);
-	console.log("REQUEST BODY:", JSON.stringify(body));
+	const fullURL = `${BASE_URL}${endpoint}`;
+
+	// ✅ Keep for tonight's showcase — remove before production release
+	if (__DEV__) {
+		console.log("[authService] REQUEST →", fullURL);
+		console.log("[authService] BODY →", JSON.stringify(body));
+	}
 
 	try {
-		const response = await fetch(`${BASE_URL}${endpoint}`, config);
+		const response = await fetch(fullURL, config);
 		const data = await response.json();
-		console.log("RESPONSE:", JSON.stringify(data)); //  helps debug user data
+
+		if (__DEV__) {
+			console.log("[authService] RESPONSE ←", JSON.stringify(data));
+		}
+
 		return { ok: response.ok, status: response.status, data };
 	} catch (error) {
+		console.error("[authService] NETWORK ERROR →", error.message);
 		return {
 			ok: false,
 			status: 0,
