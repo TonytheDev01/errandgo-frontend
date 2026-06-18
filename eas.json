@@ -9,9 +9,9 @@
 			"distribution": "internal",
 			"env": {
 				"API_BASE_URL": "https://errand-go-backend.onrender.com/api",
-				"GOOGLE_CLIENT_ID": "308773991087-b6ob02aougnns4uqjug7lr6jr0cfp975.apps.googleusercontent.com",
-				"ANDROID_CLIENT_ID": "308773991087-lcbgfen72rld1421d22pfbt4ovqcearr.apps.googleusercontent.com",
-				"IOS_CLIENT_ID": "308773991087-n2qvium9uen2bv377ljegn6a4on1bdit.apps.googleusercontent.com"
+				"GOOGLE_CLIENT_ID": "877272991163-9s1hq28imnn2k6241tbccu68oc5n68uo.apps.googleusercontent.com",
+				"ANDROID_CLIENT_ID": "877272991163-el8nqjqb4cadbgqtc8iesfasnn1mm82u.apps.googleusercontent.com",
+				"IOS_CLIENT_ID": "877272991163-creqgfvvshgdri2qva54qr4ki8323oit.apps.googleusercontent.com"
 			}
 		},
 		"preview": {
@@ -21,18 +21,18 @@
 			},
 			"env": {
 				"API_BASE_URL": "https://errand-go-backend.onrender.com/api",
-				"GOOGLE_CLIENT_ID": "308773991087-b6ob02aougnns4uqjug7lr6jr0cfp975.apps.googleusercontent.com",
-				"ANDROID_CLIENT_ID": "308773991087-lcbgfen72rld1421d22pfbt4ovqcearr.apps.googleusercontent.com",
-				"IOS_CLIENT_ID": "308773991087-n2qvium9uen2bv377ljegn6a4on1bdit.apps.googleusercontent.com"
+				"GOOGLE_CLIENT_ID": "877272991163-9s1hq28imnn2k6241tbccu68oc5n68uo.apps.googleusercontent.com",
+				"ANDROID_CLIENT_ID": "877272991163-el8nqjqb4cadbgqtc8iesfasnn1mm82u.apps.googleusercontent.com",
+				"IOS_CLIENT_ID": "877272991163-creqgfvvshgdri2qva54qr4ki8323oit.apps.googleusercontent.com"
 			}
 		},
 		"production": {
 			"autoIncrement": true,
 			"env": {
 				"API_BASE_URL": "https://errand-go-backend.onrender.com/api",
-				"GOOGLE_CLIENT_ID": "308773991087-b6ob02aougnns4uqjug7lr6jr0cfp975.apps.googleusercontent.com",
-				"ANDROID_CLIENT_ID": "308773991087-lcbgfen72rld1421d22pfbt4ovqcearr.apps.googleusercontent.com",
-				"IOS_CLIENT_ID": "308773991087-n2qvium9uen2bv377ljegn6a4on1bdit.apps.googleusercontent.com"
+				"GOOGLE_CLIENT_ID": "877272991163-9s1hq28imnn2k6241tbccu68oc5n68uo.apps.googleusercontent.com",
+				"ANDROID_CLIENT_ID": "877272991163-el8nqjqb4cadbgqtc8iesfasnn1mm82u.apps.googleusercontent.com",
+				"IOS_CLIENT_ID": "877272991163-creqgfvvshgdri2qva54qr4ki8323oit.apps.googleusercontent.com"
 			}
 		}
 	},
