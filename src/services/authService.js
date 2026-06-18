@@ -1,6 +1,5 @@
-// src/services/authService.js
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CONFIG from "@constants/config"; 
+import CONFIG from "@constants/config";
 
 const BASE_URL = CONFIG.API_BASE_URL;
 const TOKEN_KEY = "errandgo_token";
@@ -10,7 +9,8 @@ const request = async (
 	endpoint,
 	method = "POST",
 	body = null,
-	token = null
+	token = null,
+	retries = 1
 ) => {
 	const headers = { "Content-Type": "application/json" };
 	if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -19,14 +19,22 @@ const request = async (
 
 	const fullURL = `${BASE_URL}${endpoint}`;
 
-	// ✅ Keep for tonight's showcase — remove before production release
 	if (__DEV__) {
 		console.log("[authService] REQUEST →", fullURL);
 		console.log("[authService] BODY →", JSON.stringify(body));
 	}
 
+	// ✅ 30s timeout — handles Render.com cold start delay
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), 30000);
+
 	try {
-		const response = await fetch(fullURL, config);
+		const response = await fetch(fullURL, {
+			...config,
+			signal: controller.signal,
+		});
+		clearTimeout(timeout);
+
 		const data = await response.json();
 
 		if (__DEV__) {
@@ -35,11 +43,21 @@ const request = async (
 
 		return { ok: response.ok, status: response.status, data };
 	} catch (error) {
+		clearTimeout(timeout);
+
+		// ✅ Retry once on cold start timeout or flaky network
+		if (retries > 0) {
+			if (__DEV__) console.log("[authService] Retrying request...");
+			return request(endpoint, method, body, token, retries - 1);
+		}
+
 		console.error("[authService] NETWORK ERROR →", error.message);
 		return {
 			ok: false,
 			status: 0,
-			data: { error: "Network error. Please check your connection." },
+			data: {
+				error: "Server is waking up. Please wait 30 seconds and try again.",
+			},
 		};
 	}
 };

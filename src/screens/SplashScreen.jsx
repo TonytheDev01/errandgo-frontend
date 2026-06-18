@@ -6,8 +6,14 @@ import HomeIndicator from "../components/HomeIndicator";
 import ErrandGoLogo from "../components/ErrandGoLogo";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/typography";
+import CONFIG from "../constants/config";
+
 const SplashScreen = ({ navigation }) => {
 	useEffect(() => {
+		// ✅ Wake up backend on app launch — fire and forget
+		// Prevents cold start timeout when user hits register/login
+		fetch(`${CONFIG.API_BASE_URL}/health`).catch(() => {});
+
 		const t = setTimeout(() => navigation.replace("Onboarding"), 2500);
 		return () => clearTimeout(t);
 	}, [navigation]);
